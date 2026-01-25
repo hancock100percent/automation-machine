@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candle Co. - Content Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f4a261;
+        }
+
+        .date-range {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .positive { color: #2ecc71; }
+        .negative { color: #e74c3c; }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 200px;
+            gap: 12px;
+            padding-top: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #f4a261 0%, #e76f51 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .bar:hover {
+            filter: brightness(1.2);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #888;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .post-types {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .post-type-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .post-type-label {
+            width: 100px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .post-type-bar {
+            flex: 1;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .post-type-fill {
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .top-posts {
+            margin-bottom: 30px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .post-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .post-image {
+            height: 150px;
+            background: linear-gradient(135deg, #f4a261 0%, #e9c46a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .post-content {
+            padding: 16px;
+        }
+
+        .post-type-badge {
+            font-size: 10px;
+            background: rgba(244, 162, 97, 0.2);
+            color: #f4a261;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .post-caption {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .stat-icon {
+            margin-right: 4px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .hashtag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hashtag {
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .hashtag.hot {
+            background: rgba(244, 162, 97, 0.3);
+            color: #f4a261;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 30px;
+        }
+
+        .powered-by {
+            color: #f4a261;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="logo">Candle Co. Analytics</div>
+            <div class="date-range">Jan 20 - Feb 18, 2026 (30 days)</div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Posts</div>
+                <div class="metric-value">30</div>
+                <div class="metric-change positive">+30 from last period</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Est. Engagement</div>
+                <div class="metric-value">4.2K</div>
+                <div class="metric-change positive">+185% projected</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Avg. Engagement Rate</div>
+                <div class="metric-value">6.8%</div>
+                <div class="metric-change positive">Above industry avg</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Content Cost</div>
+                <div class="metric-value">$0.04</div>
+                <div class="metric-change positive">99% savings vs agency</div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-card">
+                <div class="chart-title">Engagement by Day of Week (Projected)</div>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 65%">
+                        <span class="bar-label">Mon</span>
+                        <span class="bar-value">520</span>
+                    </div>
+                    <div class="bar" style="height: 78%">
+                        <span class="bar-label">Tue</span>
+                        <span class="bar-value">624</span>
+                    </div>
+                    <div class="bar" style="height: 85%">
+                        <span class="bar-label">Wed</span>
+                        <span class="bar-value">680</span>
+                    </div>
+                    <div class="bar" style="height: 72%">
+                        <span class="bar-label">Thu</span>
+                        <span class="bar-value">576</span>
+                    </div>
+                    <div class="bar" style="height: 92%">
+                        <span class="bar-label">Fri</span>
+                        <span class="bar-value">736</span>
+                    </div>
+                    <div class="bar" style="height: 100%">
+                        <span class="bar-label">Sat</span>
+                        <span class="bar-value">800</span>
+                    </div>
+                    <div class="bar" style="height: 88%">
+                        <span class="bar-label">Sun</span>
+                        <span class="bar-value">704</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Content by Post Type</div>
+                <div class="post-types">
+                    <div class="post-type-row">
+                        <span class="post-type-label">Product</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 23%; background: #f4a261;">5</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Lifestyle</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 20%; background: #e9c46a;">4</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Educational</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 23%; background: #2a9d8f;">5</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Behind Scenes</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 17%; background: #264653;">4</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Seasonal</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 13%; background: #e76f51;">3</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Testimonial</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 13%; background: #9b59b6;">3</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">UGC</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 20%; background: #3498db;">6</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="top-posts">
+            <div class="section-title">Top Performing Content (Projected)</div>
+            <div class="posts-grid">
+                <div class="post-card">
+                    <div class="post-image">1</div>
+                    <div class="post-content">
+                        <span class="post-type-badge">SEASONAL</span>
+                        <div class="post-caption">Winter whispers call for warm vanilla embrace. Our seasonal candle wraps you in comfort...</div>
+                        <div class="post-stats">
+                            <span><span class="stat-icon">+</span>342 likes</span>
+                            <span><span class="stat-icon">+</span>28 comments</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-image">2</div>
+                    <div class="post-content">
+                        <span class="post-type-badge">BEHIND SCENES</span>
+                        <div class="post-caption">Peek into our studio where passion meets craftsmanship. Hand-pouring each candle...</div>
+                        <div class="post-stats">
+                            <span><span class="stat-icon">+</span>298 likes</span>
+                            <span><span class="stat-icon">+</span>45 comments</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-image">3</div>
+                    <div class="post-content">
+                        <span class="post-type-badge">PRODUCT</span>
+                        <div class="post-caption">Discover Lavender Dreams, our soothing luxury candle. Infuse your space with calming...</div>
+                        <div class="post-stats">
+                            <span><span class="stat-icon">+</span>276 likes</span>
+                            <span><span class="stat-icon">+</span>19 comments</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-card">
+                <div class="chart-title">Top Performing Hashtags</div>
+                <div class="hashtag-cloud">
+                    <span class="hashtag hot">#cozymoments</span>
+                    <span class="hashtag hot">#luxurycandles</span>
+                    <span class="hashtag hot">#wellness</span>
+                    <span class="hashtag">#aromatherapy</span>
+                    <span class="hashtag">#selfcare</span>
+                    <span class="hashtag">#candlelover</span>
+                    <span class="hashtag">#homefragrance</span>
+                    <span class="hashtag">#relaxation</span>
+                    <span class="hashtag">#hygge</span>
+                    <span class="hashtag">#mindfulness</span>
+                    <span class="hashtag">#handpoured</span>
+                    <span class="hashtag">#artisan</span>
+                    <span class="hashtag">#smallbatch</span>
+                    <span class="hashtag">#soycandle</span>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">AI Generation Stats</div>
+                <div class="post-types" style="gap: 16px;">
+                    <div class="post-type-row">
+                        <span class="post-type-label">Captions</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 100%; background: #2ecc71;">30 generated</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Hashtags</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 100%; background: #3498db;">450 curated</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">Images</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 33%; background: #9b59b6;">10 ready</div>
+                        </div>
+                    </div>
+                    <div class="post-type-row">
+                        <span class="post-type-label">API Cost</span>
+                        <div class="post-type-bar">
+                            <div class="post-type-fill" style="width: 1%; background: #f4a261;">$0.04</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Dashboard generated by <span class="powered-by">Automation Machine</span> | AI-Powered Marketing Analytics</p>
+            <p style="margin-top: 8px;">Contact: [Your Fiverr] | Built with local LLMs + ComfyUI</p>
+        </footer>
+    </div>
+</body>
+</html>

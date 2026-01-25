@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.env
+
+# Generated outputs
+output/
+
+# State files (contain usage/cost data)
+usage_log.json
+auto_doc_state.json
+
+# IDE
+.vscode/
+.idea/
+
+# Windows artifacts
+nul
+Thumbs.db
+
+# Sensitive
+*.key
+*.pem
+credentials*.json

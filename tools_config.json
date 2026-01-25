@@ -1,0 +1,54 @@
+{
+  "perplexity": {
+    "enabled": true,
+    "api_key_env": "PERPLEXITY_API_KEY",
+    "model": "sonar-pro",
+    "cost_per_1m_tokens": 3.0,
+    "note": "Models: sonar ($1/1M), sonar-pro ($3/1M), sonar-reasoning-pro ($5/1M)",
+    "use_for": ["web research", "current events", "price comparisons", "latest news"]
+  },
+  "comfyui": {
+    "enabled": true,
+    "endpoint": "http://100.64.130.71:8188",
+    "workflow_path": "C:/automation-machine/workflows/",
+    "output_path": "C:/automation-machine/output/",
+    "cost_per_image": 0.0,
+    "default_workflow": "sdxl_quality.json",
+    "note": "The Machine - RTX 5060 Ti 16GB"
+  },
+  "github": {
+    "enabled": true,
+    "token_env": "GITHUB_TOKEN",
+    "note": "Uses gh CLI for safe read operations",
+    "use_for": ["repository management", "code search", "issue tracking", "PR review"],
+    "safe_operations": ["list", "view", "search", "status"]
+  },
+  "supabase": {
+    "enabled": false,
+    "url_env": "SUPABASE_URL",
+    "key_env": "SUPABASE_KEY",
+    "note": "Enable after setup - will store usage_log and client data",
+    "use_for": ["database queries", "data storage", "analytics dashboard", "real-time subscriptions"]
+  },
+  "claude-in-chrome": {
+    "enabled": false,
+    "note": "Install extension from https://claude.com/chrome - generates automation steps",
+    "use_for": ["browser automation", "form filling", "social media posting", "web scraping"],
+    "capabilities": ["navigate", "click", "fill", "extract", "multi-tab"]
+  },
+  "banana": {
+    "enabled": false,
+    "api_key_env": "BANANA_API_KEY",
+    "note": "GPU serverless - add when local GPU is busy",
+    "use_for": ["overflow GPU tasks", "parallel image generation"]
+  },
+  "claude": {
+    "enabled": true,
+    "api_key_env": "ANTHROPIC_API_KEY",
+    "model": "claude-sonnet-4-20250514",
+    "cost_per_input_1m": 3.0,
+    "cost_per_output_1m": 15.0,
+    "note": "Cloud fallback for complex/novel tasks",
+    "use_for": ["complex code", "reasoning", "analysis", "novel problems"]
+  }
+}
