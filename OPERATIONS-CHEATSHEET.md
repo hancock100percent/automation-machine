@@ -1,6 +1,10 @@
 # Automation Machine - Operations Cheat Sheet
 
+**Last Updated:** January 25, 2026
+
 Quick reference for daily operations. Copy-paste ready commands.
+
+**Repo:** https://github.com/hancock100percent/automation-machine
 
 ---
 
@@ -127,7 +131,7 @@ python C:\automation-machine\automation_brain.py --tools
 ### Optional Variables
 | Variable | Purpose |
 |----------|---------|
-| `GITHUB_TOKEN` | GitHub MCP integration |
+| `GITHUB_TOKEN` | GitHub API (not needed - gh CLI uses own auth) |
 | `SUPABASE_URL` | Supabase database |
 | `SUPABASE_KEY` | Supabase auth |
 
@@ -192,6 +196,70 @@ python C:\automation-machine\automation_brain.py -v "Explain what a variable is"
 
 # Should route to Claude (complex)
 python C:\automation-machine\automation_brain.py -v "Design a microservices architecture"
+```
+
+---
+
+## 8. GITHUB INTEGRATION (COMPLETED)
+
+### Status: WORKING
+- GitHub CLI installed: `C:\Program Files\GitHub CLI\gh.exe`
+- Authenticated as: `hancock100percent`
+- Repo: https://github.com/hancock100percent/automation-machine
+
+### Common Commands
+```powershell
+# Check auth status
+gh auth status
+
+# List your repos
+gh repo list
+
+# View repo details
+gh repo view hancock100percent/automation-machine
+
+# Clone a repo
+gh repo clone hancock100percent/automation-machine
+
+# Create issue
+gh issue create --title "Bug" --body "Description"
+
+# List issues
+gh issue list
+
+# Create pull request
+gh pr create --title "Feature" --body "Description"
+
+# List PRs
+gh pr list
+
+# Search code across repos
+gh search code "pattern"
+```
+
+### Git Workflow
+```powershell
+# Check status
+git status
+
+# Stage changes
+git add filename.py
+git add -A                    # Stage all
+
+# Commit
+git commit -m "Description of changes"
+
+# Push to GitHub
+git push
+
+# Pull latest
+git pull
+```
+
+### Quick Sync (after making changes)
+```powershell
+cd C:\automation-machine
+git add -A && git commit -m "Update" && git push
 ```
 
 ---
