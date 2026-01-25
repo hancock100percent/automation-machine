@@ -2,6 +2,8 @@
 
 Local-first AI orchestration system for cost-optimized query routing across multiple LLMs.
 
+**Repo:** https://github.com/hancock100percent/automation-machine
+
 ## Owner Intent
 
 **Goal:** Become an expert in everything Claude has to offer - Claude Code, Claude API, MCP servers, integrations - and connect it with every possible tool to build and advertise automation expertise.
@@ -66,7 +68,7 @@ python auto_doc.py --eod "summary"              # End of day update
 - [x] Analytics dashboard mockup (fiverr-assets/)
 - [x] Case study documentation (demo-clients/candle-co/)
 - [x] Gig descriptions (fiverr-assets/)
-- [ ] Generate sample images (run generate_candle_images.py)
+- [x] Generate sample images (5 generated, 25 remaining)
 - [ ] Video demos
 - [ ] Publish gigs on Fiverr
 
@@ -163,12 +165,18 @@ Model Context Protocol (MCP) extends Claude's capabilities by connecting to exte
 
 ### GitHub MCP Setup
 
-```bash
-# Ensure gh CLI is installed and authenticated
-gh auth login
+**Status:** INSTALLED & AUTHENTICATED (hancock100percent)
 
-# Test connection
+```bash
+# Check auth status
 gh auth status
+
+# Common commands
+gh repo list                    # List your repos
+gh repo view                    # View current repo
+gh issue list                   # List issues
+gh pr list                      # List PRs
+gh search code "pattern"        # Search code
 
 # automation_brain.py auto-routes GitHub queries to gh CLI
 python automation_brain.py "list my recent repos"
