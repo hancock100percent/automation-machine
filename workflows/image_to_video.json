@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "title": "Image to Video - Wan2.1 I2V",
+    "description": "Animates a static image into a 3-5 second video clip using Wan2.1 I2V model",
+    "version": "2.0",
+    "updated": "2026-01-26",
+    "requires": ["ComfyUI-VideoHelperSuite", "Wan2.1 I2V model in diffusion_models/"],
+    "vram_required": "~10GB",
+    "notes": "Updated for ComfyUI v0.7.0 node structure"
+  },
+  "1": {
+    "inputs": {
+      "unet_name": "wan2.1_i2v_480p_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {"title": "Load Wan2.1 I2V Model"}
+  },
+  "2": {
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {"title": "Load VAE"}
+  },
+  "3": {
+    "inputs": {
+      "clip_name": "t5xxl_fp16.safetensors",
+      "type": "wan"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {"title": "Load CLIP (T5)"}
+  },
+  "4": {
+    "inputs": {
+      "clip_name": "clip_vision_vit_h.safetensors"
+    },
+    "class_type": "CLIPVisionLoader",
+    "_meta": {"title": "Load CLIP Vision"}
+  },
+  "5": {
+    "inputs": {
+      "image": "INPUT_IMAGE.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {"title": "Load Source Image"}
+  },
+  "6": {
+    "inputs": {
+      "text": "gentle motion, soft flickering flame, warm ambient glow, subtle shadows moving",
+      "clip": ["3", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "Positive Prompt (Motion)"}
+  },
+  "7": {
+    "inputs": {
+      "text": "static, frozen, no movement, blurry, jittery, flickering, distorted, morphing",
+      "clip": ["3", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "Negative Prompt"}
+  },
+  "8": {
+    "inputs": {
+      "image": ["5", 0],
+      "clip_vision": ["4", 0]
+    },
+    "class_type": "CLIPVisionEncode",
+    "_meta": {"title": "Encode Source Image"}
+  },
+  "9": {
+    "inputs": {
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "vae": ["2", 0],
+      "width": 848,
+      "height": 480,
+      "length": 81,
+      "batch_size": 1,
+      "start_image": ["5", 0],
+      "clip_vision_output": ["8", 0]
+    },
+    "class_type": "WanImageToVideo",
+    "_meta": {"title": "Wan I2V Conditioning"}
+  },
+  "10": {
+    "inputs": {
+      "seed": 42,
+      "steps": 30,
+      "cfg": 5.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": ["1", 0],
+      "positive": ["9", 0],
+      "negative": ["9", 1],
+      "latent_image": ["9", 2]
+    },
+    "class_type": "KSampler",
+    "_meta": {"title": "Sample Video"}
+  },
+  "11": {
+    "inputs": {
+      "samples": ["10", 0],
+      "vae": ["2", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {"title": "Decode Video"}
+  },
+  "12": {
+    "inputs": {
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "i2v_wan",
+      "format": "video/h264-mp4",
+      "save_output": true,
+      "images": ["11", 0]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {"title": "Save Video (MP4)"}
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "_meta": {
+    "title": "Lip Sync - Wav2Lip",
+    "description": "Sync lips on existing video or image to audio using Wav2Lip",
+    "version": "1.0",
+    "requires": ["ComfyUI-VideoHelperSuite", "ComfyUI-Wav2Lip"],
+    "vram_required": "4GB+",
+    "notes": "Lighter alternative to SadTalker. Can work with video input for better results."
+  },
+  "1": {
+    "inputs": {
+      "video": "INPUT_VIDEO_OR_IMAGE_PATH",
+      "force_rate": 25,
+      "force_size": "Disabled",
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1
+    },
+    "class_type": "VHS_LoadVideo",
+    "_meta": {"title": "Load Video/Image Sequence"}
+  },
+  "2": {
+    "inputs": {
+      "audio": "AUDIO_FILE_PATH"
+    },
+    "class_type": "LoadAudio",
+    "_meta": {"title": "Load Audio File"}
+  },
+  "3": {
+    "inputs": {
+      "checkpoint": "wav2lip_gan.pth"
+    },
+    "class_type": "Wav2LipModelLoader",
+    "_meta": {"title": "Load Wav2Lip Model"}
+  },
+  "4": {
+    "inputs": {
+      "model": ["3", 0],
+      "images": ["1", 0],
+      "audio": ["2", 0],
+      "face_detect_batch": 8,
+      "nosmooth": false,
+      "resize_factor": 1
+    },
+    "class_type": "Wav2LipSync",
+    "_meta": {"title": "Apply Lip Sync"}
+  },
+  "5": {
+    "inputs": {
+      "frame_rate": 25,
+      "loop_count": 0,
+      "filename_prefix": "lipsync_output",
+      "format": "video/h264-mp4",
+      "save_output": true,
+      "audio": ["2", 0],
+      "images": ["4", 0]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {"title": "Save Synced Video (MP4)"}
+  }
+}

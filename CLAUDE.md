@@ -43,6 +43,18 @@ python automation_brain.py --tool perplexity "web search"
 python automation_brain.py --tool local-qwen "code question"
 python automation_brain.py --tool claude "complex problem"
 
+# Image Generation
+python automation_brain.py "generate image of luxury candle"
+
+# Video Generation
+python automation_brain.py "animate this candle image"
+python automation_brain.py "create video from output/candle.png"
+python automation_brain.py --tool comfyui-video "animate with flame motion"
+
+# Talking Head (Avatar Videos)
+python automation_brain.py "generate talking head photo: face.png audio: script.wav"
+python automation_brain.py --tool comfyui-video-talking-head "avatar from photo.png with audio.wav"
+
 # Status
 python automation_brain.py --stats              # View costs
 python automation_brain.py --tools              # List available tools
@@ -68,8 +80,13 @@ python auto_doc.py --eod "summary"              # End of day update
 - [x] Analytics dashboard mockup (fiverr-assets/)
 - [x] Case study documentation (demo-clients/candle-co/)
 - [x] Gig descriptions (fiverr-assets/)
-- [x] Generate sample images (5 generated, 25 remaining)
-- [ ] Video demos
+- [x] Generate sample images (14 generated)
+- [ ] Video demos (IN PROGRESS)
+  - [ ] Video 1: AI Marketing Automation (60-90s)
+  - [ ] Video 2: AI Image Generation (45-60s)
+  - [ ] Video 3: Analytics Dashboard (45-60s)
+  - See: `fiverr-assets/VIDEO-PRODUCTION.md` for tracker
+  - Scripts: `demo-clients/candle-co/video-scripts.md`
 - [ ] Publish gigs on Fiverr
 
 ## Key Files
@@ -82,6 +99,8 @@ python auto_doc.py --eod "summary"              # End of day update
 | `tools_config.json` | Tool integrations (Perplexity, ComfyUI, Claude) |
 | `usage_log.json` | Cost tracking database |
 | `HANDOFF.md` | Cross-LLM handoff protocol |
+| `fiverr-assets/VIDEO-PRODUCTION.md` | Video production tracker |
+| `demo-clients/candle-co/video-scripts.md` | Demo video scripts |
 
 ## Code Conventions
 
@@ -109,6 +128,10 @@ PERPLEXITY_API_KEY    # Perplexity web research
 |----------|---------|
 | `sdxl_basic.json` | Original basic SDXL workflow |
 | `sdxl_quality.json` | Enhanced with refiner + quality prompts |
+| `image_to_video.json` | Wan2.1 I2V for animating images |
+| `image_to_video_animatediff.json` | AnimateDiff for motion loops |
+| `talking_head.json` | SadTalker for avatar videos |
+| `lipsync_wav2lip.json` | Wav2Lip alternative lip sync |
 
 ## Knowledge Base Structure
 
@@ -202,6 +225,64 @@ set SUPABASE_KEY=your-anon-key
 2. **comfyui-orchestrator** - Better image generation management
 3. **multi-machine-coordinator** - Unify Gaming PC + The Machine + Laptop
 
+## ComfyUI Video Generation
+
+Video production capabilities on The Machine (RTX 5060 Ti 16GB).
+
+### Capabilities
+
+| Feature | Model | VRAM | Status |
+|---------|-------|------|--------|
+| Image-to-Video | Wan2.1 I2V | ~8GB | Nodes ready, model needed |
+| Motion Loops | AnimateDiff | ~10GB | Nodes ready |
+| Talking Heads | SadTalker | ~6GB | Partial, model needed |
+| Lip Sync | Wav2Lip | ~4GB | Nodes ready |
+
+### Current Status (2026-01-26)
+
+**ComfyUI:** v0.7.0 running at http://100.64.130.71:8188
+**GPU:** RTX 5060 Ti 16GB (~15GB free)
+
+| Component | Status |
+|-----------|--------|
+| VideoHelperSuite | INSTALLED (40 nodes) |
+| Wan2.1 nodes | INSTALLED (27 nodes) |
+| AnimateDiff | INSTALLED (30+ nodes) |
+| SadTalker | NOT INSTALLED (needs setup) |
+| Kling Lip Sync | AVAILABLE (API-based) |
+| **Wan2.1 model** | NOT DOWNLOADED |
+
+### Setup (Download Models)
+
+```bash
+# Via ComfyUI Manager (recommended):
+# 1. Open http://100.64.130.71:8188
+# 2. Manager → Install Models
+# 3. Search "Wan2.1 I2V" and download
+# 4. Search "SadTalker" and download
+
+# Direct model locations:
+# - diffusion_models/ → Wan2.1 I2V
+# - custom_nodes/SadTalker/checkpoints/ → SadTalker
+```
+
+### Video Commands
+
+```bash
+# Image-to-video (auto-detected)
+python automation_brain.py "animate this candle image with flame motion"
+python automation_brain.py "create video from output/candle_001.png"
+
+# Talking head (requires photo + audio)
+python automation_brain.py "generate talking head photo: photos/avatar.png audio: audio/script.wav"
+
+# Force specific tool
+python automation_brain.py --tool comfyui-video "animate with subtle motion"
+python automation_brain.py --tool comfyui-video-talking-head "avatar from files"
+```
+
+### Cost: $0 (100% local processing)
+
 ## Claude in Chrome Integration
 
 Browser automation for tasks requiring web interaction.
@@ -238,14 +319,16 @@ User Request → automation_brain.py detects browser need
 ```
 Query → Analyze complexity/needs
          ↓
-Needs browser?     → Claude in Chrome (step generation)
-Needs GitHub?      → gh CLI (FREE, safe read ops)
-Needs web data?    → Perplexity sonar-pro (~$0.001)
-Needs images?      → ComfyUI (FREE, local GPU)
-Needs database?    → Supabase (when enabled)
-Simple query?      → DeepSeek R1 (FREE, local)
-Code/analysis?     → Qwen 2.5 32B (FREE, local)
-Complex/novel?     → Claude Sonnet (last resort, ~$0.15)
+Needs browser?       → Claude in Chrome (step generation)
+Needs GitHub?        → gh CLI (FREE, safe read ops)
+Needs web data?      → Perplexity sonar-pro (~$0.001)
+Needs video?         → ComfyUI Video (FREE, Wan2.1/AnimateDiff)
+Needs talking head?  → ComfyUI SadTalker (FREE, avatar videos)
+Needs images?        → ComfyUI (FREE, local GPU)
+Needs database?      → Supabase (when enabled)
+Simple query?        → DeepSeek R1 (FREE, local)
+Code/analysis?       → Qwen 2.5 32B (FREE, local)
+Complex/novel?       → Claude Sonnet (last resort, ~$0.15)
 ```
 
 ## Environment Variables (Updated)

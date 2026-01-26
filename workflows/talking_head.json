@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "title": "Talking Head - SadTalker",
+    "description": "Generate talking head video from a photo + audio file using SadTalker",
+    "version": "2.0",
+    "updated": "2026-01-26",
+    "status": "REQUIRES INSTALLATION",
+    "requires": [
+      "ComfyUI-VideoHelperSuite (INSTALLED)",
+      "ComfyUI-SadTalker (NOT INSTALLED - see setup below)"
+    ],
+    "vram_required": "6GB+",
+    "notes": "Replaces HeyGen for avatar videos ($0 vs $29-89/mo)",
+    "setup": {
+      "install_command": "cd C:\\ComfyUI\\custom_nodes && git clone https://github.com/AIFSH/ComfyUI-SadTalker",
+      "models_needed": [
+        "SadTalker checkpoints → custom_nodes/ComfyUI-SadTalker/checkpoints/",
+        "GFPGAN for face enhancement (optional)"
+      ],
+      "alternative": "Use KlingLipSyncAudioToVideoNode (API-based, requires Kling account)"
+    }
+  },
+  "1": {
+    "inputs": {
+      "image": "FACE_IMAGE.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {"title": "Load Face Image"}
+  },
+  "2": {
+    "inputs": {
+      "audio": "SCRIPT_AUDIO.wav"
+    },
+    "class_type": "LoadAudio",
+    "_meta": {"title": "Load Audio File"}
+  },
+  "3": {
+    "inputs": {
+      "checkpoint": "SadTalker_V0.0.2_512.safetensors"
+    },
+    "class_type": "SadTalkerModelLoader",
+    "_meta": {
+      "title": "Load SadTalker Model",
+      "note": "NODE NOT FOUND - Install ComfyUI-SadTalker first"
+    }
+  },
+  "4": {
+    "inputs": {
+      "model": ["3", 0],
+      "source_image": ["1", 0],
+      "driven_audio": ["2", 0],
+      "preprocess": "crop",
+      "still_mode": false,
+      "expression_scale": 1.0,
+      "pose_style": 0,
+      "batch_size": 2,
+      "enhancer": "gfpgan"
+    },
+    "class_type": "SadTalkerGenerate",
+    "_meta": {
+      "title": "Generate Talking Head",
+      "note": "NODE NOT FOUND - Install ComfyUI-SadTalker first"
+    }
+  },
+  "5": {
+    "inputs": {
+      "frame_rate": 25,
+      "loop_count": 0,
+      "filename_prefix": "talking_head",
+      "format": "video/h264-mp4",
+      "save_output": true,
+      "audio": ["2", 0],
+      "images": ["4", 0]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {"title": "Save Video with Audio (MP4)"}
+  }
+}

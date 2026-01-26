@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "title": "Image to Video - AnimateDiff",
+    "description": "Alternative workflow using AnimateDiff for motion loops and subtle animations",
+    "version": "1.0",
+    "requires": ["ComfyUI-VideoHelperSuite", "ComfyUI-AnimateDiff-Evolved"],
+    "vram_required": "10GB+",
+    "notes": "Better for looping animations (flame flicker, gentle motion)"
+  },
+  "1": {
+    "inputs": {
+      "image": "INPUT_IMAGE_PATH"
+    },
+    "class_type": "LoadImage",
+    "_meta": {"title": "Load Source Image"}
+  },
+  "2": {
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {"title": "Load SDXL Base"}
+  },
+  "3": {
+    "inputs": {
+      "model_name": "mm_sdxl_v10_beta.ckpt"
+    },
+    "class_type": "ADE_LoadAnimateDiffModel",
+    "_meta": {"title": "Load AnimateDiff Motion Model"}
+  },
+  "4": {
+    "inputs": {
+      "model": ["2", 0],
+      "motion_model": ["3", 0]
+    },
+    "class_type": "ADE_ApplyAnimateDiffModel",
+    "_meta": {"title": "Apply AnimateDiff to Model"}
+  },
+  "5": {
+    "inputs": {
+      "text": "MOTION_PROMPT_PLACEHOLDER, gentle movement, soft motion, natural animation",
+      "clip": ["2", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "Positive Prompt"}
+  },
+  "6": {
+    "inputs": {
+      "text": "static, frozen, jittery, flickering, ugly, blurry, distorted",
+      "clip": ["2", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "Negative Prompt"}
+  },
+  "7": {
+    "inputs": {
+      "pixels": ["1", 0],
+      "vae": ["2", 2]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {"title": "Encode Image to Latent"}
+  },
+  "8": {
+    "inputs": {
+      "samples": ["7", 0],
+      "batch_size": 16
+    },
+    "class_type": "RepeatLatentBatch",
+    "_meta": {"title": "Create Frame Batch (16 frames)"}
+  },
+  "9": {
+    "inputs": {
+      "seed": 0,
+      "steps": 20,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 0.5,
+      "model": ["4", 0],
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["8", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": {"title": "AnimateDiff KSampler"}
+  },
+  "10": {
+    "inputs": {
+      "samples": ["9", 0],
+      "vae": ["2", 2]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {"title": "Decode Video Frames"}
+  },
+  "11": {
+    "inputs": {
+      "frame_rate": 8,
+      "loop_count": 0,
+      "filename_prefix": "animatediff_output",
+      "format": "video/h264-mp4",
+      "pingpong": true,
+      "save_output": true,
+      "images": ["10", 0]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {"title": "Save Video Loop (MP4)"}
+  }
+}
