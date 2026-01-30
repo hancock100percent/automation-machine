@@ -876,3 +876,228 @@ Based on the information provided, there is no specific mention about where the 
 
 To find out where the EOD documents are actually stored in your context or organization, you might need to check more specific documentation related to document management practices within your team or ...
 
+
+---
+## [2026-01-25 06:16:54] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of Elegant luxury lavender candle burning softly on a wooden tray beside fresh lavender sprigs and a white linen cloth in a warmly lit cozy bedroom at dusk, high-end photography style, soft focus background
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+Elegant luxury lavender candle burning softly on a wooden tray beside fresh lavender sprigs and a white linen cloth in a warmly lit cozy bedroom at dusk, high-end photography style, shallow depth of field, soft focus background, golden hour lighting, rich shadows, detailed texture, cinematic composition, ultra-high resolution, impeccable craftsmanship, serene atmosphere, vintage wood grain, delicate flame flickering, subtle ambiance, high dynami...
+
+
+---
+## [2026-01-25 06:18:02] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of Cozy lifestyle scene of an open book, steaming tea cup, and a lit luxury candle on a plush armchair in a softly illuminated living room with knitted blanket, inviting warm tones
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+A cozy lifestyle scene featuring an open book with intricate leather binding, a steaming tea cup with delicate porcelain patterns, and a lit luxury candle with gold accents on a plush, velvet armchair in rich jewel tones. The setting is a softly illuminated living room bathed in inviting warm tones, enhanced by the glow of ambient lighting casting gentle shadows. A knitted blanket with soft textures lies draped over the armchair, adding warmth a...
+
+
+---
+## [2026-01-25 06:19:10] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of Infographic-style image showing a luxury candle with icons of lavender, timer at 20 minutes, and wellness benefits like reduced stress, clean white background with elegant typography
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+Create an infographic-style image showcasing a luxury scented candle adorned with subtle gold accents, set against a clean white background. The candle should feature elegant typography in a serif font that reads "Lavender Bliss." Surrounding the candle, place vibrant icons representing lavender flowers and a digital timer set to 20 minutes. Beneath these elements, list wellness benefits such as "Reduces Stress," "Promotes Relaxation," and "Enha...
+
+
+---
+## [2026-01-25 06:20:27] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of Behind-the-scenes photo of a artisan hand-pouring molten wax into a luxury glass candle vessel in a sunlit workshop with essential oils and wooden tools scattered around
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+A behind-the-scenes photo capturing an artisan meticulously hand-pouring molten wax into a luxury glass candle vessel, set in a sunlit workshop. The warm, golden hue of the wax contrasts beautifully against the clear, delicate glass. Sunlight filters through large windows, casting soft shadows and highlighting the intricate process. Essential oils are neatly arranged on a rustic wooden table nearby, while various wooden tools lie scattered aroun...
+
+
+---
+## [2026-01-25 06:21:27] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of Luxury vanilla candle glowing on a windowsill with snow falling outside, evergreen branches and a wool scarf nearby, evoking winter coziness in soft golden light
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+A luxury vanilla candle glowing softly on a windowsill, casting a warm, inviting glow across the scene; snow gently falls outside, creating a serene winter landscape; evergreen branches with pristine white dusting rest beside the candle, adding a touch of festive greenery; a rich, red wool scarf is draped casually over the windowsill, enhancing the cozy atmosphere; everything bathed in soft golden light that highlights the textures and warmth of...
+
+
+---
+## [2026-01-25 06:32:50] via perplexity (sonar-pro)
+
+**Query:** What are the best free or low-cost tools in 2026 for creating AI marketing demo videos? I need to create Fiverr gig demo videos showing: 1) AI content calendar generation, 2) AI image generation workflow, 3) Analytics dashboard. Looking for screen recording with AI voiceover, or AI video generation tools. Include pricing and specific recommendations.
+
+**Response:**
+**Top free or low-cost tools for creating AI marketing demo videos in 2026 include Synthesia (free trial with 360 credits/month for ~7 clips), Invideo AI (free plan with 2 video mins/week), Wan Video (unlimited free generations), and Supademo (free Starter plan for 5 demos).** These excel for screen recordings with AI voiceover or full AI video generation, ideal for Fiverr gigs demoing AI content calendars, image workflows, and analytics dashboards via text prompts, AI avatars, or interactive ca...
+
+
+---
+## [2026-01-25 06:33:12] via perplexity (sonar-pro)
+
+**Query:** Best practices for creating Fiverr gig demo videos in 2026: What length, format, and style converts best? How do top sellers structure their videos? Include specific tips for AI/automation service gigs.
+
+**Response:**
+**Fiverr gigs with videos significantly outperform those without, as they showcase skills, build trust, and boost conversions; optimal demo videos are short (30-90 seconds), in vertical MP4 format for mobile viewing, and use a professional yet engaging style with clear voiceover, screen demos, and text overlays.[2][1][3]**
+
+### Recommended Length
+- Keep videos **under 90 seconds** to match buyer attention spans on mobile—start with a hook in the first 5 seconds, deliver value quickly, and end wi...
+
+
+---
+## [2026-01-25 06:33:29] via perplexity (sonar-pro)
+
+**Query:** Fiverr gig video best practices 2026: optimal length, format, structure for AI automation service sellers. What converts best?
+
+**Response:**
+**Fiverr gig videos for AI automation service sellers should be short (under 2 minutes), in horizontal MP4 format, and structured to quickly showcase expertise, benefits, and a call to action, as these elements boost visibility, trust, and conversions.** [1][2][3][4]
+
+Gigs with videos consistently perform better by increasing click-through rates (CTR), building trust, and attracting buyers, especially for non-visual services like AI automation where a video can demonstrate tools, workflows, or r...
+
+
+---
+## [2026-01-25 06:37:20] via perplexity (sonar-pro)
+
+**Query:** Canva Pro video features 2026: AI video generation, text-to-video, AI voiceover capabilities. What can Canva Pro do for creating marketing demo videos?
+
+**Response:**
+**Canva Pro in 2026 enables creating marketing demo videos through AI-powered tools like text-to-video generation, image-to-video conversion, Magic Video for automated editing, AI Highlights for clips, and voiceover recording, alongside premium templates, stock libraries, and intuitive editing features.** [1][2][3][6][7]
+
+These capabilities streamline professional video production without advanced skills, ideal for demos showcasing products or services.
+
+### Key AI Video Generation Features
+- **...
+
+
+---
+## [2026-01-25 06:37:38] via perplexity (sonar-pro)
+
+**Query:** ComfyUI video generation 2026: best models and workflows for text-to-video, image-to-video. What models work with RTX 5060 Ti 16GB VRAM? Include AnimateDiff, Wan, SVD, CogVideoX options.
+
+**Response:**
+**In 2026, the best ComfyUI models for text-to-video (T2V) and image-to-video (I2V) include Wan2.1 (1.3B/14B variants), HunyuanVideo (13B), LTX Video (v0.9.5, 2B params), Mochi 1, Pyramid Flow, and CogVideoX-5B, with AnimateDiff and Stable Video Diffusion (SVD) remaining viable but outpaced by newer options like LTX for speed.** These integrate seamlessly via ComfyUI nodes for workflows supporting T2V, I2V, reference video, super-resolution, and frame interpolation.[1][3]
+
+### Top Models and Key...
+
+
+---
+## [2026-01-25 07:02:02] via perplexity (sonar-pro)
+
+**Query:** Canva Pro AI avatar presenter feature 2026 - does Canva have AI talking head avatars like Synthesia? How to create AI presenter videos in Canva?
+
+**Response:**
+**Yes, Canva offers AI talking head avatars similar to Synthesia through integrated apps like HeyGen AI Avatars, D-ID AI Avatars, and others, available in Canva Pro.** These tools let you generate videos with customizable AI presenters that speak your script, making them ideal for presentations, social media, and marketing.[1][2][6][7][9]
+
+### Key Features and Comparisons
+- **HeyGen AI Avatars**: Connect your HeyGen account in Canva, select an AI presenter, input your script, and generate talkin...
+
+
+---
+## [2026-01-25 07:02:18] via perplexity (sonar-pro)
+
+**Query:** ComfyUI talking head lip sync video generation 2026 - can ComfyUI create AI avatar videos with audio lip sync? What nodes or models are needed?
+
+**Response:**
+**Yes, ComfyUI can create AI avatar videos with audio lip sync using specialized custom nodes and models like SyncTalk, InfiniteTalk, HUMO, MultiTalk, and Sonic Digital Human.**[1][2][4][6][7]
+
+These tools enable generation from static images, videos, or portraits paired with audio, producing realistic lip movements, facial expressions, head motions, and even multi-speaker interactions.[1][2][3][4][5][6]
+
+### Key Nodes and Models
+| Tool/Model | Description | Inputs | Key Nodes/Workflows |
+|-----...
+
+
+---
+## [2026-01-25 07:02:33] via perplexity (sonar-pro)
+
+**Query:** ComfyUI lip sync talking avatar video nodes 2026
+
+**Response:**
+**ComfyUI-LatentSyncWrapper** is the primary node for lip-sync talking avatar videos in ComfyUI, using ByteDance's LatentSync 1.6 model to synchronize video lips with audio input, producing high-clarity results at 512×512 resolution.[1]
+
+### Key Features and Usage
+- **Input Requirements**: Load input video (frontal face, 25 FPS recommended, auto-converted) via AceNodes video loader and audio via ComfyUI audio loader. Connect to the LatentSync1.6 node.[1]
+- **Parameters**:
+  | Parameter          ...
+
+
+---
+## [2026-01-25 07:46:05] via comfyui-video (local-qwen)
+
+**Query:** animate the candle image at output/20260125_062127_automation_machine_00014_.png with gentle flame flicker
+
+**Response:**
+**ComfyUI Connection Error:** 400 Client Error: Bad Request for url: http://100.64.130.71:8188/prompt
+
+**Motion prompt for manual use:**
+Gently flicker the flame with a soft glow and slight sway for a natural effect.
+
+Ensure ComfyUI is running at http://100.64.130.71:8188
+
+
+---
+## [2026-01-25 07:47:49] via comfyui (sdxl_base_1.0)
+
+**Query:** generate image of a single candle flame flickering in darkness
+
+**Response:**
+**Image Generated Successfully**
+
+**Prompt used:**
+A single candle flame flickers softly in the deep darkness, its warm, golden light casting gentle shadows around. The flame dances subtly with a slight breeze, creating an atmosphere of serene tranquility. Shot in high definition with a focus on the intricate details of the flame's texture and movement. The background is pitch black, enhancing the contrast and isolating the candle as the sole source of light. Style leans towards realism with a t...
+
+
+---
+## [2026-01-29] Claude Code Session - SadTalker Debugging
+
+**Summary:** Attempted to run SadTalker talking head workflow on The Machine. Hit FFmpeg/TorchCodec error.
+
+**Issue:** `ShowAudio` node (Node ID 6) in SadTalker workflow fails with `Could not load libtorchcodec`. PyTorch 2.9.1 uses torchcodec as default torchaudio backend, which requires FFmpeg shared DLLs on Windows. FFmpeg is not installed on The Machine.
+
+**Fix options identified:**
+1. Install FFmpeg full-shared build (winget or manual download) + add to PATH
+2. Quick fix: `pip install soundfile` and change `torchaudio.load()` to use `backend="soundfile"`
+
+**Status:** FIXED.
+
+**What was done:**
+1. SSH key auth set up (Gaming PC → The Machine, passwordless)
+   - Added `Match Group administrators` + `administrators_authorized_keys` to sshd_config
+   - Claude Code can now run remote commands on The Machine directly
+2. Patched `ShowAudio.py` line 29: added `backend="soundfile"` to `torchaudio.load()`
+3. Restarted ComfyUI service — confirmed running (v0.7.0, RTX 5060 Ti detected)
+
+**Next steps (in order):**
+1. ~~Download SadTalker models~~ DONE (same session)
+2. ~~Test SadTalker with photo + audio~~ DONE (same session)
+3. Evaluate quality of test output
+4. If quality acceptable, proceed with video production
+
+### Models Downloaded (same session):
+- `SadTalker_V0.0.2_256.safetensors` + `_512.safetensors` (725MB each)
+- 4x GFPGAN weights (alignment, detection, GFPGANv1.4, parsing) ~737MB total
+- All downloaded remotely via SSH from Gaming PC
+
+### SadTalker Test Result (same session):
+- **SUCCESS** - First talking head video generated via API
+- Output: `C:\ComfyUI\output\20260129185450.mp4` (743KB, ~4.5s, 256x256)
+- Required 7 bug fixes across ShowAudio.py, ShowText.py, ShowVideo.py, videoio.py
+- Key issues: torchcodec crash, ffmpeg not in service PATH, API vs browser None checks
+- Copied ffmpeg.exe to `C:\ComfyUI\` for service access
+- Full fix details in `fiverr-assets/VIDEO-PRODUCTION.md`
+- **SadTalker status: WORKING**
+

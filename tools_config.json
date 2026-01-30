@@ -9,12 +9,35 @@
   },
   "comfyui": {
     "enabled": true,
-    "endpoint": "http://100.64.130.71:8188",
+    "endpoint": "http://100.64.130.71:8189",
     "workflow_path": "C:/automation-machine/workflows/",
     "output_path": "C:/automation-machine/output/",
     "cost_per_image": 0.0,
+    "cost_per_video": 0.0,
     "default_workflow": "sdxl_quality.json",
-    "note": "The Machine - RTX 5060 Ti 16GB"
+    "video_workflow": "image_to_video.json",
+    "talking_head_workflow": "talking_head.json",
+    "note": "The Machine - RTX 5060 Ti 16GB",
+    "video_capabilities": {
+      "image_to_video": {
+        "enabled": true,
+        "model": "wan2.1_i2v_480p_14B",
+        "max_frames": 81,
+        "fps": 24,
+        "note": "Requires VideoHelperSuite + Wan2.1 model"
+      },
+      "talking_head": {
+        "enabled": true,
+        "model": "sadtalker_v0.0.2_512",
+        "enhancer": "gfpgan",
+        "note": "Requires SadTalker nodes + models"
+      },
+      "animatediff": {
+        "enabled": true,
+        "model": "mm_sd_v15_v2",
+        "note": "For looping animations"
+      }
+    }
   },
   "github": {
     "enabled": true,

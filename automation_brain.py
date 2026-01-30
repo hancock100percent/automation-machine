@@ -26,7 +26,7 @@ KNOWLEDGE_BASE_PATH = BASE_DIR / "knowledge-base"
 CONVERSATION_LOG_PATH = KNOWLEDGE_BASE_PATH / "research" / "conversation-log.md"
 
 # Task categories for routing
-TaskCategory = Literal["research", "code", "reasoning", "image", "database", "general"]
+TaskCategory = Literal["research", "code", "reasoning", "image", "video", "database", "general"]
 
 
 class AutomationBrain:
@@ -74,6 +74,8 @@ class AutomationBrain:
             "complexity": "simple",
             "needs_web": False,
             "needs_image": False,
+            "needs_video": False,
+            "needs_talking_head": False,
             "needs_database": False,
             "needs_code": False,
             "needs_browser": False,
@@ -90,6 +92,25 @@ class AutomationBrain:
         if any(indicator in query_lower for indicator in web_indicators):
             analysis["needs_web"] = True
             analysis["category"] = "research"
+
+        # Detect video generation needs (check before image)
+        video_indicators = [
+            "generate video", "create video", "animate", "animation",
+            "video clip", "motion", "image to video", "i2v", "video from"
+        ]
+        if any(indicator in query_lower for indicator in video_indicators):
+            analysis["needs_video"] = True
+            analysis["category"] = "video"
+
+        # Detect talking head / avatar needs
+        talking_head_indicators = [
+            "talking head", "avatar", "lip sync", "lipsync", "sadtalker",
+            "speaking video", "face animation", "photo to video with audio"
+        ]
+        if any(indicator in query_lower for indicator in talking_head_indicators):
+            analysis["needs_talking_head"] = True
+            analysis["needs_video"] = True
+            analysis["category"] = "video"
 
         # Detect image generation needs
         image_indicators = [
@@ -180,6 +201,14 @@ class AutomationBrain:
             if self.tools_config.get("github", {}).get("enabled"):
                 return "github"
             return "local-qwen"  # Fallback to describe git commands
+
+        # Video generation → ComfyUI Video
+        if analysis.get("needs_video"):
+            if self.tools_config.get("comfyui", {}).get("enabled"):
+                if analysis.get("needs_talking_head"):
+                    return "comfyui-video-talking-head"
+                return "comfyui-video"
+            return "local-qwen"  # Fallback to describe what to generate
 
         # Image generation → ComfyUI
         if analysis["needs_image"]:
@@ -498,6 +527,366 @@ class AutomationBrain:
             "cost": 0.0,
             "tool": "comfyui",
             "model": "sdxl_base_1.0",
+            "output_files": saved_files
+        }
+
+    def _delegate_to_comfyui_video(self, query: str) -> dict:
+        """
+        Delegate image-to-video generation to ComfyUI on The Machine.
+        Uses Wan2.1 I2V or AnimateDiff workflows.
+        """
+        import time
+        import uuid
+
+        comfyui_config = self.tools_config.get("comfyui", {})
+        endpoint = comfyui_config.get("endpoint", "http://100.64.130.71:8188")
+        workflow_path = Path(comfyui_config.get("workflow_path", "C:/automation-machine/workflows/"))
+        output_path = Path(comfyui_config.get("output_path", "C:/automation-machine/output/"))
+
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        self._log(f"ComfyUI Video delegation to {endpoint}")
+
+        # Step 1: Generate motion prompt using local LLM
+        prompt_instruction = (
+            f"Create a brief motion description for animating: {query}\n\n"
+            "Requirements:\n"
+            "- Describe subtle, natural movement\n"
+            "- Keep it simple (flame flicker, gentle sway, soft glow)\n"
+            "- One sentence, under 20 words\n"
+            "- Output ONLY the motion description"
+        )
+        prompt_response = self._delegate_to_local(prompt_instruction, model="qwen")
+        motion_prompt = prompt_response["response"].strip()
+
+        self._log(f"Motion prompt: {motion_prompt}")
+
+        # Step 2: Load video workflow
+        workflow_file = workflow_path / "image_to_video.json"
+        if not workflow_file.exists():
+            # Try AnimateDiff as fallback
+            workflow_file = workflow_path / "image_to_video_animatediff.json"
+
+        if not workflow_file.exists():
+            return {
+                "response": f"**Error:** Video workflow not found.\n\n"
+                           f"Expected: `workflows/image_to_video.json` or `workflows/image_to_video_animatediff.json`\n\n"
+                           f"**Motion prompt for manual use:**\n{motion_prompt}\n\n"
+                           f"**Setup required:**\n"
+                           f"1. Install ComfyUI-VideoHelperSuite on The Machine\n"
+                           f"2. Download Wan2.1 I2V model\n"
+                           f"3. Restart ComfyUI",
+                "tokens_in": prompt_response["tokens_in"],
+                "tokens_out": prompt_response["tokens_out"],
+                "cost": 0.0,
+                "tool": "comfyui-video",
+                "model": "local-qwen"
+            }
+
+        with open(workflow_file, "r") as f:
+            workflow = json.load(f)
+
+        # Extract image path from query if provided
+        image_path = None
+        import re
+        path_match = re.search(r'(?:from|image|with)\s+["\']?([^\s"\']+\.(?:png|jpg|jpeg))["\']?', query.lower())
+        if path_match:
+            image_path = path_match.group(1)
+
+        # Inject motion prompt
+        if "3" in workflow and "inputs" in workflow["3"]:
+            workflow["3"]["inputs"]["text"] = motion_prompt
+        if "7" in workflow and "inputs" in workflow["7"]:
+            workflow["7"]["inputs"]["seed"] = int(time.time()) % (2**32)
+
+        # If image path provided, update workflow
+        if image_path:
+            if "1" in workflow and "inputs" in workflow["1"]:
+                workflow["1"]["inputs"]["image"] = image_path
+
+        # Step 3: Queue the workflow
+        client_id = str(uuid.uuid4())
+        try:
+            queue_response = requests.post(
+                f"{endpoint}/prompt",
+                json={"prompt": workflow, "client_id": client_id},
+                timeout=30
+            )
+            queue_response.raise_for_status()
+            prompt_id = queue_response.json().get("prompt_id")
+            self._log(f"Queued video prompt: {prompt_id}")
+        except requests.exceptions.RequestException as e:
+            return {
+                "response": f"**ComfyUI Connection Error:** {e}\n\n"
+                           f"**Motion prompt for manual use:**\n{motion_prompt}\n\n"
+                           f"Ensure ComfyUI is running at {endpoint}",
+                "tokens_in": prompt_response["tokens_in"],
+                "tokens_out": prompt_response["tokens_out"],
+                "cost": 0.0,
+                "tool": "comfyui-video",
+                "model": "local-qwen"
+            }
+
+        # Step 4: Poll for completion (max 10 minutes for video)
+        max_wait = 600
+        poll_interval = 5
+        waited = 0
+        output_videos = []
+
+        while waited < max_wait:
+            try:
+                history_response = requests.get(
+                    f"{endpoint}/history/{prompt_id}",
+                    timeout=10
+                )
+                history = history_response.json()
+
+                if prompt_id in history:
+                    outputs = history[prompt_id].get("outputs", {})
+                    for node_id, node_output in outputs.items():
+                        if "gifs" in node_output:
+                            for vid in node_output["gifs"]:
+                                output_videos.append(vid)
+                        if "videos" in node_output:
+                            for vid in node_output["videos"]:
+                                output_videos.append(vid)
+                    if outputs:
+                        break
+            except Exception as e:
+                self._log(f"Poll error: {e}")
+
+            time.sleep(poll_interval)
+            waited += poll_interval
+            self._log(f"Waiting for video generation... {waited}s")
+
+        # Step 5: Download and save videos
+        saved_files = []
+        for vid_info in output_videos:
+            filename = vid_info.get("filename", "output.mp4")
+            subfolder = vid_info.get("subfolder", "")
+            vid_type = vid_info.get("type", "output")
+
+            try:
+                vid_url = f"{endpoint}/view?filename={filename}&subfolder={subfolder}&type={vid_type}"
+                vid_response = requests.get(vid_url, timeout=60)
+                vid_response.raise_for_status()
+
+                local_filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_video_{filename}"
+                local_path = output_path / local_filename
+                with open(local_path, "wb") as f:
+                    f.write(vid_response.content)
+                saved_files.append(str(local_path))
+                self._log(f"Saved video: {local_path}")
+            except Exception as e:
+                self._log(f"Failed to download {filename}: {e}")
+
+        # Step 6: Return result
+        if saved_files:
+            response_text = (
+                f"**Video Generated Successfully**\n\n"
+                f"**Motion prompt:**\n{motion_prompt}\n\n"
+                f"**Output files:**\n" + "\n".join(f"- {f}" for f in saved_files) + "\n\n"
+                f"**Generation time:** ~{waited}s"
+            )
+        else:
+            response_text = (
+                f"**Video generation pending or in progress**\n\n"
+                f"**Motion prompt:**\n{motion_prompt}\n\n"
+                f"Check ComfyUI at {endpoint} for status.\n"
+                f"Video generation takes longer than images (~2-5 minutes)."
+            )
+
+        return {
+            "response": response_text,
+            "tokens_in": prompt_response["tokens_in"],
+            "tokens_out": prompt_response["tokens_out"],
+            "cost": 0.0,
+            "tool": "comfyui-video",
+            "model": "wan2.1-i2v",
+            "output_files": saved_files
+        }
+
+    def _delegate_to_comfyui_talking_head(self, query: str) -> dict:
+        """
+        Delegate talking head generation to ComfyUI using SadTalker.
+        Requires: face image + audio file
+        """
+        import time
+        import uuid
+
+        comfyui_config = self.tools_config.get("comfyui", {})
+        endpoint = comfyui_config.get("endpoint", "http://100.64.130.71:8188")
+        workflow_path = Path(comfyui_config.get("workflow_path", "C:/automation-machine/workflows/"))
+        output_path = Path(comfyui_config.get("output_path", "C:/automation-machine/output/"))
+
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        self._log(f"ComfyUI Talking Head delegation to {endpoint}")
+
+        # Extract file paths from query
+        import re
+        image_match = re.search(r'(?:photo|image|face)[:\s]+["\']?([^\s"\']+\.(?:png|jpg|jpeg))["\']?', query.lower())
+        audio_match = re.search(r'(?:audio|with)[:\s]+["\']?([^\s"\']+\.(?:wav|mp3|m4a))["\']?', query.lower())
+
+        face_image = image_match.group(1) if image_match else None
+        audio_file = audio_match.group(1) if audio_match else None
+
+        # Check for workflow
+        workflow_file = workflow_path / "talking_head.json"
+        if not workflow_file.exists():
+            return {
+                "response": f"**Error:** Talking head workflow not found.\n\n"
+                           f"Expected: `workflows/talking_head.json`\n\n"
+                           f"**Setup required:**\n"
+                           f"1. Install ComfyUI-SadTalker nodes on The Machine\n"
+                           f"2. Download SadTalker models\n"
+                           f"3. Restart ComfyUI\n\n"
+                           f"**Manual workflow:**\n"
+                           f"1. Open ComfyUI at {endpoint}\n"
+                           f"2. Load a SadTalker workflow\n"
+                           f"3. Set source image: {face_image or 'your_photo.png'}\n"
+                           f"4. Set audio file: {audio_file or 'your_audio.wav'}\n"
+                           f"5. Queue prompt",
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost": 0.0,
+                "tool": "comfyui-video-talking-head",
+                "model": "sadtalker"
+            }
+
+        if not face_image or not audio_file:
+            return {
+                "response": f"**Talking Head Generation**\n\n"
+                           f"Please provide both required files:\n\n"
+                           f"**Usage:**\n"
+                           f"```\n"
+                           f"python automation_brain.py \"generate talking head photo: path/to/face.png audio: path/to/script.wav\"\n"
+                           f"```\n\n"
+                           f"**Detected:**\n"
+                           f"- Face image: {face_image or 'NOT PROVIDED'}\n"
+                           f"- Audio file: {audio_file or 'NOT PROVIDED'}\n\n"
+                           f"**Tips:**\n"
+                           f"- Face image: well-lit, front-facing, neutral expression\n"
+                           f"- Audio: clear voice, quiet room, WAV format preferred",
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost": 0.0,
+                "tool": "comfyui-video-talking-head",
+                "model": "sadtalker"
+            }
+
+        with open(workflow_file, "r") as f:
+            workflow = json.load(f)
+
+        # Update workflow with provided files
+        if "1" in workflow and "inputs" in workflow["1"]:
+            workflow["1"]["inputs"]["image"] = face_image
+        if "2" in workflow and "inputs" in workflow["2"]:
+            workflow["2"]["inputs"]["audio"] = audio_file
+
+        # Queue the workflow
+        client_id = str(uuid.uuid4())
+        try:
+            queue_response = requests.post(
+                f"{endpoint}/prompt",
+                json={"prompt": workflow, "client_id": client_id},
+                timeout=30
+            )
+            queue_response.raise_for_status()
+            prompt_id = queue_response.json().get("prompt_id")
+            self._log(f"Queued talking head prompt: {prompt_id}")
+        except requests.exceptions.RequestException as e:
+            return {
+                "response": f"**ComfyUI Connection Error:** {e}\n\n"
+                           f"Ensure ComfyUI is running at {endpoint}\n\n"
+                           f"**Files to use:**\n"
+                           f"- Face: {face_image}\n"
+                           f"- Audio: {audio_file}",
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost": 0.0,
+                "tool": "comfyui-video-talking-head",
+                "model": "sadtalker"
+            }
+
+        # Poll for completion (max 10 minutes)
+        max_wait = 600
+        poll_interval = 5
+        waited = 0
+        output_videos = []
+
+        while waited < max_wait:
+            try:
+                history_response = requests.get(
+                    f"{endpoint}/history/{prompt_id}",
+                    timeout=10
+                )
+                history = history_response.json()
+
+                if prompt_id in history:
+                    outputs = history[prompt_id].get("outputs", {})
+                    for node_id, node_output in outputs.items():
+                        if "gifs" in node_output:
+                            for vid in node_output["gifs"]:
+                                output_videos.append(vid)
+                        if "videos" in node_output:
+                            for vid in node_output["videos"]:
+                                output_videos.append(vid)
+                    if outputs:
+                        break
+            except Exception as e:
+                self._log(f"Poll error: {e}")
+
+            time.sleep(poll_interval)
+            waited += poll_interval
+            self._log(f"Waiting for talking head generation... {waited}s")
+
+        # Download and save videos
+        saved_files = []
+        for vid_info in output_videos:
+            filename = vid_info.get("filename", "output.mp4")
+            subfolder = vid_info.get("subfolder", "")
+            vid_type = vid_info.get("type", "output")
+
+            try:
+                vid_url = f"{endpoint}/view?filename={filename}&subfolder={subfolder}&type={vid_type}"
+                vid_response = requests.get(vid_url, timeout=60)
+                vid_response.raise_for_status()
+
+                local_filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_talking_head_{filename}"
+                local_path = output_path / local_filename
+                with open(local_path, "wb") as f:
+                    f.write(vid_response.content)
+                saved_files.append(str(local_path))
+                self._log(f"Saved talking head video: {local_path}")
+            except Exception as e:
+                self._log(f"Failed to download {filename}: {e}")
+
+        if saved_files:
+            response_text = (
+                f"**Talking Head Generated Successfully**\n\n"
+                f"**Source:**\n"
+                f"- Face: {face_image}\n"
+                f"- Audio: {audio_file}\n\n"
+                f"**Output files:**\n" + "\n".join(f"- {f}" for f in saved_files) + "\n\n"
+                f"**Generation time:** ~{waited}s"
+            )
+        else:
+            response_text = (
+                f"**Talking head generation pending**\n\n"
+                f"**Source:**\n"
+                f"- Face: {face_image}\n"
+                f"- Audio: {audio_file}\n\n"
+                f"Check ComfyUI at {endpoint} for status."
+            )
+
+        return {
+            "response": response_text,
+            "tokens_in": 0,
+            "tokens_out": 0,
+            "cost": 0.0,
+            "tool": "comfyui-video-talking-head",
+            "model": "sadtalker",
             "output_files": saved_files
         }
 
@@ -825,6 +1214,10 @@ Be specific about selectors and actions."""
                 result = self._delegate_to_claude(enhanced_query)
             elif tool == "comfyui":
                 result = self._delegate_to_comfyui(query)
+            elif tool == "comfyui-video":
+                result = self._delegate_to_comfyui_video(query)
+            elif tool == "comfyui-video-talking-head":
+                result = self._delegate_to_comfyui_talking_head(query)
             elif tool == "github":
                 result = self._delegate_to_github(query)
             elif tool == "claude-in-chrome":
@@ -908,6 +1301,11 @@ Be specific about selectors and actions."""
         print("  deepseek-r1:latest    [ACTIVE] Fast reasoning")
         print("  qwen2.5:32b           [ACTIVE] Powerful code/analysis")
 
+        # Video generation
+        print("\n--- Video Generation (Free via ComfyUI) ---")
+        print("  comfyui-video         [ACTIVE] Image-to-video (Wan2.1, AnimateDiff)")
+        print("  comfyui-video-talking-head [ACTIVE] Talking heads (SadTalker)")
+
         # External tools
         print("\n--- External Integrations ---")
         for tool_name, config in self.tools_config.items():
@@ -935,7 +1333,8 @@ def main():
     parser.add_argument("--tools", action="store_true", help="Show available tools")
     parser.add_argument("--tool", choices=[
         "local-deepseek", "local-qwen", "perplexity", "claude",
-        "comfyui", "github", "supabase", "claude-in-chrome"
+        "comfyui", "comfyui-video", "comfyui-video-talking-head",
+        "github", "supabase", "claude-in-chrome"
     ], help="Force specific tool")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Show routing decisions")

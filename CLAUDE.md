@@ -81,7 +81,8 @@ python auto_doc.py --eod "summary"              # End of day update
 - [x] Case study documentation (demo-clients/candle-co/)
 - [x] Gig descriptions (fiverr-assets/)
 - [x] Generate sample images (14 generated)
-- [ ] Video demos (IN PROGRESS)
+- [ ] Video demos (IN PROGRESS - Wan2.1 I2V WORKING)
+  - [x] Wan2.1 video generation tested (i2v_wan_test_00001.mp4)
   - [ ] Video 1: AI Marketing Automation (60-90s)
   - [ ] Video 2: AI Image Generation (45-60s)
   - [ ] Video 3: Analytics Dashboard (45-60s)
@@ -233,37 +234,79 @@ Video production capabilities on The Machine (RTX 5060 Ti 16GB).
 
 | Feature | Model | VRAM | Status |
 |---------|-------|------|--------|
-| Image-to-Video | Wan2.1 I2V | ~8GB | Nodes ready, model needed |
+| Image-to-Video | Wan2.1 I2V 480p | ~13GB | **WORKING** - tested 2026-01-26 |
 | Motion Loops | AnimateDiff | ~10GB | Nodes ready |
-| Talking Heads | SadTalker | ~6GB | Partial, model needed |
+| Talking Heads | SadTalker | ~6GB | Nodes installed, needs models |
 | Lip Sync | Wav2Lip | ~4GB | Nodes ready |
 
 ### Current Status (2026-01-26)
 
 **ComfyUI:** v0.7.0 running at http://100.64.130.71:8188
-**GPU:** RTX 5060 Ti 16GB (~15GB free)
+**GPU:** RTX 5060 Ti 16GB (~13GB used during video gen)
 
 | Component | Status |
 |-----------|--------|
 | VideoHelperSuite | INSTALLED (40 nodes) |
 | Wan2.1 nodes | INSTALLED (27 nodes) |
 | AnimateDiff | INSTALLED (30+ nodes) |
-| SadTalker | NOT INSTALLED (needs setup) |
+| SadTalker | INSTALLED (needs models downloaded) |
 | Kling Lip Sync | AVAILABLE (API-based) |
-| **Wan2.1 model** | NOT DOWNLOADED |
+| **Wan2.1 I2V 480p model** | WORKING (fp8, ~7GB) |
+| **Wan2.1 I2V 720p model** | AVAILABLE (fp16, needs more RAM) |
+| **umt5_xxl text encoder** | WORKING |
+| **wan_2.1_vae** | WORKING |
+| **CLIP-ViT-H vision** | WORKING |
 
-### Setup (Download Models)
+### Models (Downloaded)
 
-```bash
-# Via ComfyUI Manager (recommended):
-# 1. Open http://100.64.130.71:8188
-# 2. Manager → Install Models
-# 3. Search "Wan2.1 I2V" and download
-# 4. Search "SadTalker" and download
+```
+C:\ComfyUI\models\diffusion_models\Wan2.1\
+  - wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors (WORKING)
+  - wan2.1_i2v_720p_14B_fp16.safetensors (needs more paging file)
 
-# Direct model locations:
-# - diffusion_models/ → Wan2.1 I2V
-# - custom_nodes/SadTalker/checkpoints/ → SadTalker
+C:\ComfyUI\models\text_encoders\
+  - umt5_xxl_fp16.safetensors (required for Wan - NOT t5xxl)
+
+C:\ComfyUI\models\vae\
+  - wan_2.1_vae.safetensors
+
+C:\ComfyUI\models\clip_vision\
+  - CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
+```
+
+**Performance:** 81 frames @ 30 steps = ~42 min on RTX 5060 Ti
+
+### Restarting ComfyUI (The Machine)
+
+ComfyUI runs as a **Windows Service** on The Machine. Do NOT use taskkill - the service auto-restarts.
+
+```powershell
+# SSH to The Machine
+ssh michael@100.64.130.71
+
+# Stop the service (proper way)
+Stop-Service ComfyUI
+
+# Do any maintenance (install deps, etc.)
+pip install <package>
+
+# Start the service
+Start-Service ComfyUI
+
+# Verify it's running
+Get-Service ComfyUI
+netstat -ano | findstr 8188
+```
+
+**Wrong way (will auto-restart immediately):**
+```powershell
+# DON'T DO THIS - service will respawn
+taskkill /f /pid <PID>
+```
+
+**One-liner restart:**
+```powershell
+$pid = (netstat -ano | findstr "8188" | findstr "LISTENING" | ForEach-Object { $_.Split()[-1] } | Select-Object -First 1); if ($pid) { taskkill /f /pid $pid; Start-Sleep -Seconds 3 }; cd C:\ComfyUI; python main.py --listen
 ```
 
 ### Video Commands

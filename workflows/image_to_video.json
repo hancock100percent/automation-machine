@@ -2,15 +2,17 @@
   "_meta": {
     "title": "Image to Video - Wan2.1 I2V",
     "description": "Animates a static image into a 3-5 second video clip using Wan2.1 I2V model",
-    "version": "2.0",
+    "version": "2.1",
     "updated": "2026-01-26",
-    "requires": ["ComfyUI-VideoHelperSuite", "Wan2.1 I2V model in diffusion_models/"],
-    "vram_required": "~10GB",
-    "notes": "Updated for ComfyUI v0.7.0 node structure"
+    "tested": "2026-01-26 - SUCCESS (i2v_wan_test_00001.mp4)",
+    "requires": ["ComfyUI-VideoHelperSuite", "Wan2.1 I2V 480p model", "umt5_xxl_fp16 text encoder", "CLIP-ViT-H vision encoder", "wan_2.1_vae"],
+    "vram_required": "~13GB peak",
+    "generation_time": "~42 min for 81 frames @ 30 steps on RTX 5060 Ti",
+    "notes": "Use umt5_xxl (not t5xxl) for text encoder. CLIPVisionEncode requires crop parameter."
   },
   "1": {
     "inputs": {
-      "unet_name": "wan2.1_i2v_480p_bf16.safetensors",
+      "unet_name": "Wan2.1\\wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors",
       "weight_dtype": "default"
     },
     "class_type": "UNETLoader",
@@ -25,7 +27,7 @@
   },
   "3": {
     "inputs": {
-      "clip_name": "t5xxl_fp16.safetensors",
+      "clip_name": "umt5_xxl_fp16.safetensors",
       "type": "wan"
     },
     "class_type": "CLIPLoader",
@@ -33,7 +35,7 @@
   },
   "4": {
     "inputs": {
-      "clip_name": "clip_vision_vit_h.safetensors"
+      "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"
     },
     "class_type": "CLIPVisionLoader",
     "_meta": {"title": "Load CLIP Vision"}
@@ -65,7 +67,8 @@
   "8": {
     "inputs": {
       "image": ["5", 0],
-      "clip_vision": ["4", 0]
+      "clip_vision": ["4", 0],
+      "crop": "center"
     },
     "class_type": "CLIPVisionEncode",
     "_meta": {"title": "Encode Source Image"}
@@ -115,6 +118,7 @@
       "loop_count": 0,
       "filename_prefix": "i2v_wan",
       "format": "video/h264-mp4",
+      "pingpong": false,
       "save_output": true,
       "images": ["11", 0]
     },
