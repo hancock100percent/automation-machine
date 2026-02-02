@@ -1101,3 +1101,80 @@ A single candle flame flickers softly in the deep darkness, its warm, golden lig
 - Full fix details in `fiverr-assets/VIDEO-PRODUCTION.md`
 - **SadTalker status: WORKING**
 
+
+---
+## [2026-01-30 04:54:04] via perplexity (sonar-pro)
+
+**Query:** Best tools and methods in 2026 for stitching together short video clips with audio tracks into a final edited video, programmatically on Windows. Need to combine: 1) AI-generated video clips (3-5 seconds each from ComfyUI/Wan2.1), 2) Talking head clips from SadTalker, 3) Screen recordings, 4) Background music and voiceover audio. Looking for Python libraries, FFmpeg commands, or free video editing APIs. Must work locally on Windows with no cloud costs. Compare: moviepy, ffmpeg-python, OpenCV video writing, and any newer 2026 options. Include code examples for common operations like concatenating clips, adding audio tracks, crossfade transitions, and text overlays.
+
+**Response:**
+# Best Python Tools for Programmatic Video Stitching on Windows in 2026
+
+**MoviePy is the most recommended option for your use case**, as it handles video concatenation, audio mixing, and effects in pure Python with minimal setup on Windows. However, **FFmpeg-based tools offer superior performance** for production workflows, while **PyAV provides a middle ground** with direct FFmpeg access and better speed than MoviePy.
+
+## Tool Comparison
+
+| Tool | Strengths | Limitations | Best For |
+|------|-...
+
+
+---
+## [2026-01-30 05:03:22] via perplexity (sonar-pro)
+
+**Query:** Best programmatic video editing solution for use with Claude Code CLI in 2026. I'm using Claude Code (Anthropic's terminal-based AI coding assistant) to build automation scripts on Windows. I need to assemble demo videos from: 1) Short AI-generated clips (3-5s each from ComfyUI Wan2.1), 2) SadTalker talking head clips, 3) Screen recordings, 4) Voiceover audio + background music. Comparing MoviePy vs ffmpeg-python vs PyAV: Which integrates best with a Claude Code workflow where the AI writes and runs Python scripts directly? Consider: installation simplicity (pip install), debugging ease (clear error messages), documentation quality, ability to preview/iterate quickly, and Windows compatibility. Also: is there a way to use FFmpeg directly from Claude Code bash commands for simple operations like concatenation and audio mixing without needing a Python wrapper? Include practical workflow recommendations for someone building videos iteratively with an AI coding assistant.
+
+**Response:**
+**FFmpeg directly via subprocess or bash commands in Claude Code integrates best for your 2026 Windows workflow**, offering the simplest installation, fastest performance for concatenation/audio mixing, and easiest debugging/iteration without Python wrappers like MoviePy, ffmpeg-python, or PyAV.[3][5]
+
+### Comparison of Options
+| Library/Tool | Installation (pip/Windows) | Debugging Ease | Documentation | Preview/Iteration Speed | Windows Compatibility | Best For Your Clips (AI, SadTalker, Scree...
+
+
+---
+## [2026-02-01 06:53:45] via perplexity (sonar-pro)
+
+**Query:** What are YouTubers and content creators using in January-February 2026 for AI talking head avatar videos and AI image-to-video generation? Compare the most popular tools: SadTalker, Wav2Lip, HeyGen, D-ID, Synthesia, Hedra, Kling AI, Runway Gen-3, Pika Labs, Luma Dream Machine, Hailuo MiniMax, Wan2.1, CogVideoX, and any newer tools. Focus on: 1) Which tools produce the most realistic talking head videos with accurate lip sync? 2) Which free/open-source tools are competitive with paid services? 3) What are the common complaints about SadTalker quality like teeth distortion and jaw artifacts? 4) What newer open-source models have replaced or improved on SadTalker for talking heads? 5) What image-to-video tools give the most realistic motion in 2026? Include specific model names and GitHub repos where applicable.
+
+**Response:**
+**HeyGen, Synthesia, D-ID, and emerging tools like Zoice and Higgsfield (with InfiniteTalks and Kling Speak) dominate YouTuber and creator use for realistic AI talking head avatars in early 2026, praised for accurate lip sync and multilingual support.** Image-to-video leaders include Runway Gen-4.5, Pika Labs, and Kling AI for natural motion, with open-source options like CogVideoX trailing paid services in realism.
+
+### 1. Most Realistic Talking Head Videos with Accurate Lip Sync
+HeyGen, Synthe...
+
+
+---
+## [2026-02-01 06:54:04] via perplexity (sonar-pro)
+
+**Query:** What are the best open source alternatives to SadTalker for AI talking head video generation that can run locally on an RTX GPU in 2026? Specifically looking for ComfyUI compatible models or standalone tools. Consider: MuseTalk, AniPortrait, V-Express, LivePortrait, EchoMimic, Hallo, Hallo2, DreamTalk, and any newer models from late 2025 or early 2026. Which ones produce the most realistic results with no teeth distortion? Which ones have ComfyUI nodes available? Include GitHub repo URLs.
+
+**Response:**
+**InfiniteTalk (via MultiTalk) and Fantasy Talking (Alibaba's WAN 2.1-based) are the top open-source alternatives to SadTalker for local RTX GPU execution in 2026, producing highly realistic lip-synced talking head videos with strong identity preservation and minimal reported teeth distortion.**[1][2][3][4] These outperform older models like MuseTalk, V-Express, LivePortrait, and EchoMimic in realism due to advanced phoneme-aware motion and diffusion-based animation, while JoyHallo offers solid ...
+
+
+---
+## [2026-02-01 06:54:21] via perplexity (sonar-pro)
+
+**Query:** What are the best open source alternatives to SadTalker for AI talking head video generation that can run locally on an RTX GPU in 2026? Specifically looking for ComfyUI compatible models or standalone tools. Consider: MuseTalk, AniPortrait, V-Express, LivePortrait, EchoMimic, Hallo, Hallo2, DreamTalk, and any newer models from late 2025 or early 2026. Which ones produce the most realistic results with no teeth distortion? Which ones have ComfyUI nodes available? Include GitHub repo URLs.
+
+**Response:**
+Based on the search results provided, I can identify several **ComfyUI-compatible open-source alternatives** to SadTalker that are relevant for 2026:
+
+## Available ComfyUI Solutions
+
+**InfiniteTalk** is prominently featured across multiple recent sources (September-November 2025) as a leading option for local GPU deployment[2][3][4]. It generates lip-synced talking-head videos from static images and audio files, with support for both high-VRAM setups (RTX 4090) and optimized GGUF versions for lo...
+
+
+---
+## [2026-02-01 06:54:35] via perplexity (sonar-pro)
+
+**Query:** What image-to-video models are available for ComfyUI in early 2026? Compare Wan2.1 I2V vs Wan2.2 vs CogVideoX vs HunyuanVideo vs any newer models. Which produce the most realistic motion with least distortion? What are the VRAM requirements? Are there any that can run on 16GB VRAM? Include model download links or Hugging Face repos if available.
+
+**Response:**
+Based on the available search results, I can provide limited information about image-to-video models in ComfyUI as of early 2026.
+
+## Available Models
+
+The search results confirm **LTX 2** and **WAN 2.6** are actively supported in ComfyUI[1][2][3]. LTX 0.9.7 is documented with improvements over earlier versions, including faster generation and support for distilled models[3]. However, the search results do not contain specific information about:
+
+- WAN 2.1 I2V, WAN 2.2, CogVideoX, or HunyuanVide...
+

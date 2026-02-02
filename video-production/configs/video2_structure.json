@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "title": "Video 2: AI Image Generation",
+    "target_duration": "45-60s",
+    "gig_price": "$15 / $35 / $75",
+    "output_filename": "ai-images-demo.mp4"
+  },
+  "segments": [
+    {
+      "id": "hook",
+      "label": "HOOK - Canva Image Montage",
+      "time": "0:00-0:05",
+      "duration_sec": 5,
+      "clip_source": "normalized/image_montage_norm.mp4",
+      "clip_type": "canva_export",
+      "audio_source": "none",
+      "transition_in": "fade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.3,
+      "notes": "Quick cuts (0.5s each) of 5 generated candle images"
+    },
+    {
+      "id": "demo",
+      "label": "DEMO - ComfyUI Screen Recording",
+      "time": "0:05-0:35",
+      "duration_sec": 30,
+      "clip_source": "normalized/demo_comfyui_norm.mp4",
+      "clip_type": "screen_recording",
+      "audio_source": "none",
+      "transition_in": "crossfade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.5,
+      "notes": "ComfyUI SDXL workflow demo, typing prompt, generation progress, result"
+    },
+    {
+      "id": "gallery",
+      "label": "GALLERY - Ken Burns Slideshow",
+      "time": "0:35-0:50",
+      "duration_sec": 15,
+      "clip_source": "normalized/ken_burns_slideshow_norm.mp4",
+      "clip_type": "canva_export",
+      "audio_source": "none",
+      "transition_in": "crossfade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.5,
+      "notes": "5 candle images with Ken Burns effect, 3s each"
+    },
+    {
+      "id": "cta",
+      "label": "CTA - SadTalker Avatar",
+      "time": "0:50-0:60",
+      "duration_sec": 10,
+      "clip_source": "normalized/v2_cta_avatar_norm.mp4",
+      "clip_type": "sadtalker",
+      "audio_source": "self",
+      "transition_in": "crossfade",
+      "transition_out": "fade",
+      "fade_duration": 0.5
+    }
+  ],
+  "audio_layers": [
+    {
+      "id": "bg_music",
+      "source": "demo-clients/candle-co/audio/bg_music_v2.mp3",
+      "volume": 0.15,
+      "start_time": 0,
+      "fade_in": 1.5,
+      "fade_out": 2.0,
+      "optional": true
+    }
+  ]
+}

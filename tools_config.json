@@ -32,6 +32,22 @@
         "enhancer": "gfpgan",
         "note": "Requires SadTalker nodes + models"
       },
+      "talking_head_fantasy": {
+        "enabled": true,
+        "model": "fantasytalking_fp16",
+        "backbone": "wan2.1_i2v_480p_14B",
+        "resolution": "832x480",
+        "fps": 24,
+        "note": "FantasyTalking via WanVideoWrapper - higher quality lip sync than SadTalker"
+      },
+      "image_to_video_gguf": {
+        "enabled": true,
+        "model": "wan2.1-i2v-14b-480p-Q5_K_M.gguf",
+        "text_encoder": "umt5-xxl-encoder-Q5_K_M.gguf",
+        "resolution": "1024x576",
+        "fps": 24,
+        "note": "GGUF quantized Wan2.1 I2V - faster, higher resolution"
+      },
       "animatediff": {
         "enabled": true,
         "model": "mm_sd_v15_v2",

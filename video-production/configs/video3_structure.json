@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "title": "Video 3: Analytics Dashboard",
+    "target_duration": "45-60s",
+    "gig_price": "Included with automation packages",
+    "output_filename": "analytics-demo.mp4"
+  },
+  "segments": [
+    {
+      "id": "hook",
+      "label": "HOOK - SadTalker Avatar",
+      "time": "0:00-0:05",
+      "duration_sec": 5,
+      "clip_source": "normalized/v3_intro_avatar_norm.mp4",
+      "clip_type": "sadtalker",
+      "audio_source": "self",
+      "transition_in": "fade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.5
+    },
+    {
+      "id": "demo",
+      "label": "DEMO - Dashboard Screen Recording",
+      "time": "0:05-0:40",
+      "duration_sec": 35,
+      "clip_source": "normalized/demo_dashboard_norm.mp4",
+      "clip_type": "screen_recording",
+      "audio_source": "none",
+      "transition_in": "crossfade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.5,
+      "notes": "analytics-dashboard-mockup.html walkthrough with mouse highlights"
+    },
+    {
+      "id": "features",
+      "label": "FEATURES - Canva Callouts",
+      "time": "0:40-0:50",
+      "duration_sec": 10,
+      "clip_source": "normalized/feature_callouts_norm.mp4",
+      "clip_type": "canva_export",
+      "audio_source": "none",
+      "transition_in": "crossfade",
+      "transition_out": "crossfade",
+      "fade_duration": 0.5,
+      "notes": "Animated callout boxes: real-time sync, all platforms, export reports, mobile-friendly"
+    },
+    {
+      "id": "cta",
+      "label": "CTA - Canva Text Animation",
+      "time": "0:50-0:60",
+      "duration_sec": 10,
+      "clip_source": "normalized/cta_text_animation_norm.mp4",
+      "clip_type": "canva_export",
+      "audio_source": "none",
+      "transition_in": "crossfade",
+      "transition_out": "fade",
+      "fade_duration": 0.5,
+      "notes": "Analytics dashboard included with every automation package"
+    }
+  ],
+  "audio_layers": [
+    {
+      "id": "bg_music",
+      "source": "demo-clients/candle-co/audio/bg_music_v3.mp3",
+      "volume": 0.15,
+      "start_time": 0,
+      "fade_in": 1.5,
+      "fade_out": 2.0,
+      "optional": true
+    }
+  ]
+}

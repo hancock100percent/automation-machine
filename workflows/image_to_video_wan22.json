@@ -1,44 +1,49 @@
 {
   "_meta": {
-    "title": "Image to Video - Wan2.1 I2V",
-    "description": "Animates a static image into a 3-5 second video clip using Wan2.1 I2V model",
-    "version": "2.2",
+    "title": "Image to Video - Wan2.2 I2V (GGUF)",
+    "description": "Animates a static image into video using Wan2.2 I2V 14B GGUF model. Higher resolution (1024x576) and faster than Wan2.1.",
+    "version": "1.0",
     "updated": "2026-02-01",
-    "tested": "2026-01-26 - SUCCESS (i2v_wan_test_00001.mp4)",
-    "requires": ["ComfyUI-VideoHelperSuite", "Wan2.1 I2V 480p model", "umt5_xxl_fp16 text encoder", "CLIP-ViT-H vision encoder", "wan_2.1_vae"],
-    "vram_required": "~13GB peak",
-    "generation_time": "~42 min for 81 frames @ 30 steps, ~17 min for 49 frames @ 30 steps on RTX 5060 Ti",
-    "notes": "Use umt5_xxl (not t5xxl) for text encoder. CLIPVisionEncode requires crop parameter. Use 49 frames for fast tests, 81 for production. CFG 3.0-4.0 for natural motion, euler_ancestral for variety."
+    "requires": [
+      "ComfyUI-GGUF",
+      "ComfyUI-VideoHelperSuite",
+      "Wan2.2-I2V-A14B Q5_K_M GGUF",
+      "umt5-xxl-encoder Q5_K_M GGUF",
+      "CLIP-ViT-H vision encoder",
+      "wan_2.1_vae"
+    ],
+    "vram_required": "~14GB peak",
+    "generation_time": "~7-15 min for 81 frames @ 30 steps on RTX 5060 Ti",
+    "notes": "Uses GGUF quantized models for lower VRAM. Place diffusion model in models/unet/, text encoder in models/clip/. Resolution can go up to 1024x576."
   },
   "1": {
     "inputs": {
-      "unet_name": "Wan2.1\\wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors",
-      "weight_dtype": "default"
+      "unet_name": "wan2.1-i2v-14b-480p-Q5_K_M.gguf"
     },
-    "class_type": "UNETLoader",
-    "_meta": {"title": "Load Wan2.1 I2V Model"}
+    "class_type": "UnetLoaderGGUF",
+    "_meta": { "title": "Load Wan2.2 I2V GGUF Model" }
   },
   "2": {
     "inputs": {
       "vae_name": "wan_2.1_vae.safetensors"
     },
     "class_type": "VAELoader",
-    "_meta": {"title": "Load VAE"}
+    "_meta": { "title": "Load VAE" }
   },
   "3": {
     "inputs": {
-      "clip_name": "umt5_xxl_fp16.safetensors",
+      "clip_name": "umt5-xxl-encoder-Q5_K_M.gguf",
       "type": "wan"
     },
-    "class_type": "CLIPLoader",
-    "_meta": {"title": "Load CLIP (T5)"}
+    "class_type": "CLIPLoaderGGUF",
+    "_meta": { "title": "Load CLIP Text Encoder (GGUF)" }
   },
   "4": {
     "inputs": {
       "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"
     },
     "class_type": "CLIPVisionLoader",
-    "_meta": {"title": "Load CLIP Vision"}
+    "_meta": { "title": "Load CLIP Vision" }
   },
   "5": {
     "inputs": {
@@ -46,7 +51,7 @@
       "upload": "image"
     },
     "class_type": "LoadImage",
-    "_meta": {"title": "Load Source Image"}
+    "_meta": { "title": "Load Source Image" }
   },
   "6": {
     "inputs": {
@@ -54,7 +59,7 @@
       "clip": ["3", 0]
     },
     "class_type": "CLIPTextEncode",
-    "_meta": {"title": "Positive Prompt (Motion)"}
+    "_meta": { "title": "Positive Prompt (Motion)" }
   },
   "7": {
     "inputs": {
@@ -62,7 +67,7 @@
       "clip": ["3", 0]
     },
     "class_type": "CLIPTextEncode",
-    "_meta": {"title": "Negative Prompt"}
+    "_meta": { "title": "Negative Prompt" }
   },
   "8": {
     "inputs": {
@@ -71,22 +76,22 @@
       "crop": "center"
     },
     "class_type": "CLIPVisionEncode",
-    "_meta": {"title": "Encode Source Image"}
+    "_meta": { "title": "Encode Source Image" }
   },
   "9": {
     "inputs": {
       "positive": ["6", 0],
       "negative": ["7", 0],
       "vae": ["2", 0],
-      "width": 848,
-      "height": 480,
+      "width": 1024,
+      "height": 576,
       "length": 81,
       "batch_size": 1,
       "start_image": ["5", 0],
       "clip_vision_output": ["8", 0]
     },
     "class_type": "WanImageToVideo",
-    "_meta": {"title": "Wan I2V Conditioning"}
+    "_meta": { "title": "Wan I2V Conditioning" }
   },
   "10": {
     "inputs": {
@@ -102,7 +107,7 @@
       "latent_image": ["9", 2]
     },
     "class_type": "KSampler",
-    "_meta": {"title": "Sample Video"}
+    "_meta": { "title": "Sample Video" }
   },
   "11": {
     "inputs": {
@@ -110,19 +115,19 @@
       "vae": ["2", 0]
     },
     "class_type": "VAEDecode",
-    "_meta": {"title": "Decode Video"}
+    "_meta": { "title": "Decode Video" }
   },
   "12": {
     "inputs": {
       "frame_rate": 24,
       "loop_count": 0,
-      "filename_prefix": "i2v_wan",
+      "filename_prefix": "i2v_wan22",
       "format": "video/h264-mp4",
       "pingpong": false,
       "save_output": true,
       "images": ["11", 0]
     },
     "class_type": "VHS_VideoCombine",
-    "_meta": {"title": "Save Video (MP4)"}
+    "_meta": { "title": "Save Video (MP4)" }
   }
 }

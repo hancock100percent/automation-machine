@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "title": "Video Normalization Standard",
+    "description": "All clips are re-encoded to this spec before assembly. Prevents codec/fps/resolution mismatches that break FFmpeg concat.",
+    "updated": "2026-01-30"
+  },
+  "video": {
+    "codec": "libx264",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "pixel_format": "yuv420p",
+    "crf": 23,
+    "preset": "medium",
+    "profile": "high",
+    "level": "4.1"
+  },
+  "audio": {
+    "codec": "aac",
+    "sample_rate": 48000,
+    "channels": 2,
+    "bitrate": "192k"
+  },
+  "filters": {
+    "video": "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=30,setsar=1,setpts=PTS-STARTPTS",
+    "audio": "aresample=48000:async=1,aformat=sample_fmts=fltp:channel_layouts=stereo",
+    "silent_audio": "anullsrc=channel_layout=stereo:sample_rate=48000"
+  },
+  "source_expectations": {
+    "sadtalker": {
+      "typical_resolution": "512x512",
+      "typical_fps": 25,
+      "has_audio": true,
+      "note": "Will be pillarboxed to 1080p"
+    },
+    "wan21_i2v": {
+      "typical_resolution": "848x480",
+      "typical_fps": 24,
+      "has_audio": false,
+      "note": "Will be upscaled + silent audio added"
+    },
+    "screen_recording": {
+      "typical_resolution": "1920x1080",
+      "typical_fps": 30,
+      "has_audio": false,
+      "note": "Should already match target, but re-encode anyway for codec consistency"
+    },
+    "canva_export": {
+      "typical_resolution": "1920x1080",
+      "typical_fps": 30,
+      "has_audio": false,
+      "note": "May be image sequence or video"
+    },
+    "fantasytalking": {
+      "typical_resolution": "832x480",
+      "typical_fps": 24,
+      "has_audio": true,
+      "note": "Full diffusion talking head. Higher quality than SadTalker. Will be upscaled + pillarboxed to 1080p."
+    },
+    "wan22_i2v": {
+      "typical_resolution": "1024x576",
+      "typical_fps": 24,
+      "has_audio": false,
+      "note": "Wan2.2 GGUF I2V. Higher resolution than Wan2.1. Will be upscaled + silent audio added."
+    }
+  }
+}

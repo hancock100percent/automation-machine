@@ -26,32 +26,37 @@
 - Target: Small budget clients, upsell path to automation
 - Why: Entry point, recurring add-on for automation clients
 
-### Current Phase: Demo Creation
-**Building:** Mock client system (Candle Co.) to showcase automation capabilities
+### Current Phase: Video Production
+**Building:** 3 Fiverr demo videos using automated FFmpeg pipeline + ComfyUI
 
-**What's needed:**
-1. [x] ComfyUI images generated (needs refinement)
-2. [x] Content generation examples (30-day calendar) ✓ 2026-01-20
-3. [ ] Simple analytics dashboard mockup
-4. [ ] Documentation package
-5. [ ] Gig descriptions written
-6. [ ] Video demos created
+**What's done:**
+1. [x] ComfyUI images generated (14 sample candle images)
+2. [x] Content generation examples (30-day calendar)
+3. [x] Analytics dashboard mockup (fiverr-assets/)
+4. [x] Case study documentation (demo-clients/candle-co/)
+5. [x] Gig descriptions written (fiverr-assets/)
+6. [x] Video production pipeline built (5 Python scripts, tested)
+7. [x] SadTalker + Wan2.1 I2V working on The Machine
+8. [x] Normalization + validation tested end-to-end
 
-### Image Status:
-- Have demo images from ComfyUI
-- Need refinement for professional quality
-- Will be used in automation gig portfolio (shows what system can generate)
-- NOT the main deliverable - just proof of capability
+**What's next (IN ORDER):**
+1. Record/create 14 user assets (photos, audio, screen recordings, Canva exports)
+2. Run pipeline Stage 2: generate SadTalker + I2V clips via ComfyUI API
+3. Run pipeline Stage 3: normalize all clips to 1080p30
+4. Run pipeline Stage 4: assemble 3 videos
+5. Run pipeline Stage 5: validate + export to fiverr-assets/
+6. Upload videos to Fiverr gig pages
+7. Publish gigs
 
-### Next Steps (IN ORDER):
-1. Refine ComfyUI workflow for professional quality
-2. Generate content calendar examples (local LLM)
-3. Create simple dashboard HTML mockup
-4. Package demo as Case Study
-5. Write automation gig description
-6. Write image gig description
-7. Create gig videos
-8. Launch both gigs
+### Pipeline Status (2026-01-30):
+- **Scripts:** `video-production/scripts/` (5 scripts, all tested)
+- **Configs:** `video-production/configs/` (normalization standard + 3 video structures)
+- **Tracker:** `fiverr-assets/VIDEO-PRODUCTION.md` (full reference with run commands)
+- **Quick check:** `python video-production/scripts/setup_environment.py`
+
+### Blockers:
+- 14 user-provided assets needed (see VIDEO-PRODUCTION.md for full list)
+- Key files: avatar photo, 4 audio recordings, 3 screen recordings, 6 Canva exports
 
 ### System Locations:
 - Automation Machine: C:\automation-machine\ (gaming-pc)
@@ -85,6 +90,14 @@
 
 ## EOD Summaries
 
+### 2026-01-30
+- Built 5-stage automated video production pipeline (video-production/scripts/)
+- Created normalization standard + 3 video structure configs
+- Tested normalization: 1024x1024 8fps -> 1920x1080 30fps (12/12 validation checks pass)
+- Pipeline handles all known pitfalls: codec mismatch, resolution scaling, silent audio, sample rate drift
+- Setup validation shows all-green: FFmpeg 8.0.1, SSH, ComfyUI (RTX 5060 Ti, 14.8GB free)
+- Waiting on 14 user-provided assets before full pipeline run
+
 ### 2026-01-19
 - Created handoff system (HANDOFF.md, ACTIVE-PROJECTS.md)
 - Added --update-projects flag to auto_doc.py
@@ -108,4 +121,4 @@ Read HANDOFF.md first, then check state files, continue from ACTIVE-PROJECTS.md
 
 ---
 
-*Last auto-update: 2026-01-20*
+*Last auto-update: 2026-01-30*

@@ -1,0 +1,72 @@
+[
+  {
+    "file": "i2v_wan_00001_norm.mp4",
+    "path": "C:\\automation-machine\\demo-clients\\candle-co\\video-assets\\normalized\\i2v_wan_00001_norm.mp4",
+    "timestamp": "2026-01-31T06:24:50.625941",
+    "checks": [
+      {
+        "label": "File exists",
+        "status": "PASS",
+        "detail": "1.1MB"
+      },
+      {
+        "label": "ffprobe readable",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "label": "Video stream",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "label": "Video codec",
+        "status": "PASS",
+        "detail": "h264 (expected h264)"
+      },
+      {
+        "label": "Resolution",
+        "status": "PASS",
+        "detail": "1920x1080 (expected 1920x1080)"
+      },
+      {
+        "label": "Pixel format",
+        "status": "PASS",
+        "detail": "yuv420p (expected yuv420p)"
+      },
+      {
+        "label": "Frame rate",
+        "status": "PASS",
+        "detail": "30.00fps (expected ~30)"
+      },
+      {
+        "label": "Audio stream",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "label": "Audio codec",
+        "status": "PASS",
+        "detail": "aac (expected aac)"
+      },
+      {
+        "label": "Sample rate",
+        "status": "PASS",
+        "detail": "48000Hz (expected 48000Hz)"
+      },
+      {
+        "label": "Channels",
+        "status": "PASS",
+        "detail": "2 (expected 2)"
+      },
+      {
+        "label": "Duration",
+        "status": "PASS",
+        "detail": "3.4s"
+      }
+    ],
+    "passed": true,
+    "duration": 3.366667,
+    "size_mb": 1.1412124633789062
+  }
+]
