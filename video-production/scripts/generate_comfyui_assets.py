@@ -4,11 +4,11 @@ Uploads files to The Machine via SCP, submits video generation jobs
 via ComfyUI API, polls for completion, and downloads results.
 
 Usage:
-    python video-production/scripts/generate_comfyui_assets.py                 # generate all assets
-    python video-production/scripts/generate_comfyui_assets.py --sadtalker     # SadTalker jobs only
-    python video-production/scripts/generate_comfyui_assets.py --fantasy       # FantasyTalking jobs (replaces SadTalker)
+    python video-production/scripts/generate_comfyui_assets.py                 # generate all (FantasyTalking + I2V)
+    python video-production/scripts/generate_comfyui_assets.py --fantasy       # FantasyTalking talking head jobs only
     python video-production/scripts/generate_comfyui_assets.py --i2v           # Wan2.1 I2V jobs only
     python video-production/scripts/generate_comfyui_assets.py --i2v-wan22     # Wan2.2 I2V jobs (higher quality)
+    python video-production/scripts/generate_comfyui_assets.py --sadtalker     # SadTalker jobs (legacy/deprecated)
     python video-production/scripts/generate_comfyui_assets.py --test          # Test mode (49 frames, faster)
     python video-production/scripts/generate_comfyui_assets.py --status        # check running jobs
 """
@@ -562,17 +562,25 @@ FANTASYTALKING_JOBS = [
 ]
 
 
-def build_fantasytalking_prompt(photo_filename, audio_filename):
+def build_fantasytalking_prompt(photo_filename, audio_filename, test_mode=False):
     """Build FantasyTalking ComfyUI prompt from workflow template.
 
     The workflow uses WanVideoWrapper nodes:
     - Node 58 (LoadImage): face photo
     - Node 72 (LoadAudio): audio file
-    - Node 69 (WanVideoSampler): has seed parameter
+    - Node 73 (FantasyTalkingWav2VecEmbeds): num_frames, fps
+    - Node 63 (WanVideoImageToVideoEncode): num_frames
+    - Node 69 (WanVideoSampler): seed, steps
+    - Node 16 (WanVideoTextEncode): positive/negative prompt
+
+    Args:
+        photo_filename: Name of the uploaded photo file.
+        audio_filename: Name of the uploaded audio file.
+        test_mode: If True, use 49 frames / 20 steps (faster). Production uses 81 frames / 30 steps.
     """
     if not os.path.isfile(FANTASYTALKING_WORKFLOW):
         print(f"  [ERROR] FantasyTalking workflow not found: {FANTASYTALKING_WORKFLOW}")
-        print("  Run Priority 1 setup first (install FantasyTalking node + create workflow)")
+        print("  Create it with: workflows/talking_head_fantasy.json")
         return None
 
     with open(FANTASYTALKING_WORKFLOW, "r") as f:
@@ -588,6 +596,20 @@ def build_fantasytalking_prompt(photo_filename, audio_filename):
 
     # Randomize seed (node 69 - WanVideoSampler)
     prompt["69"]["inputs"]["seed"] = random.randint(1, 2**31)
+
+    # Test mode: reduce frames and steps for faster iteration
+    if test_mode:
+        num_frames = 49
+        steps = 20
+    else:
+        num_frames = 81
+        steps = 30
+
+    # Update frame count in both nodes that reference it
+    prompt["73"]["inputs"]["num_frames"] = num_frames  # FantasyTalkingWav2VecEmbeds
+    prompt["63"]["inputs"]["num_frames"] = num_frames   # WanVideoImageToVideoEncode
+    prompt["69"]["inputs"]["steps"] = steps             # WanVideoSampler
+    prompt["78"]["inputs"]["steps"] = steps             # CreateCFGScheduleFloatList
 
     return prompt
 
@@ -622,7 +644,7 @@ def run_fantasytalking_jobs(test_mode=False):
             continue
 
         # Submit prompt
-        prompt = build_fantasytalking_prompt(job["photo"], job["audio"])
+        prompt = build_fantasytalking_prompt(job["photo"], job["audio"], test_mode=test_mode)
         if not prompt:
             continue
         print("  Submitting to ComfyUI...")
@@ -816,16 +838,18 @@ def main():
         return
 
     # Determine which jobs to run
+    # Default (no flags): FantasyTalking + Wan2.1 I2V
     any_flag = args.sadtalker or args.fantasy or args.i2v or args.i2v_wan22
-    run_st = args.sadtalker or (not any_flag)
-    run_fantasy = args.fantasy
+    run_fantasy = args.fantasy or (not any_flag)
     run_i2v = args.i2v or (not any_flag)
+    run_st = args.sadtalker  # Legacy, only when explicitly requested
     run_i2v_wan22 = args.i2v_wan22
 
-    if run_st:
-        run_sadtalker_jobs()
     if run_fantasy:
         run_fantasytalking_jobs(test_mode=args.test)
+    if run_st:
+        print("\n  NOTE: SadTalker is deprecated. Consider using --fantasy instead.")
+        run_sadtalker_jobs()
     if run_i2v:
         run_i2v_jobs(max_jobs=args.max_i2v, test_mode=args.test)
     if run_i2v_wan22:
