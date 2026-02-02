@@ -2,7 +2,7 @@
 
 ## Status: IN PROGRESS
 
-Last Updated: 2026-01-26
+Last Updated: 2026-02-02
 
 ---
 
@@ -14,7 +14,7 @@ Building a complete, scalable video production pipeline using existing tools:
 - **OBS Studio** - Screen recording
 - **Perplexity** - Research automation
 
-**Philosophy:** Local-first, cloud as fallback. SadTalker replaces HeyGen ($0 vs $29-89/month).
+**Philosophy:** Local-first, cloud as fallback. FantasyTalking replaces HeyGen ($0 vs $29-89/month).
 
 ---
 
@@ -53,14 +53,16 @@ Building a complete, scalable video production pipeline using existing tools:
 
 ## ComfyUI Video Capabilities (RTX 5060 Ti 16GB)
 
-| Capability | Model/Workflow | VRAM | Use Case |
-|------------|----------------|------|----------|
-| Image-to-Video | Wan2.1 I2V 480p | ~8GB | Animate product images |
-| Image-to-Video | AnimateDiff | ~10GB | Motion graphics, loops |
-| Talking Head | SadTalker | ~6GB | AI avatar from photo + audio |
-| Lip Sync | Wav2Lip | ~4GB | Sync any face to audio |
-| Video Upscale | Real-ESRGAN | ~4GB | Enhance low-res clips |
-| Frame Interpolation | RIFE | ~2GB | Smooth motion |
+| Capability | Model/Workflow | VRAM | Use Case | Status |
+|------------|----------------|------|----------|--------|
+| **Talking Head** | **FantasyTalking (Wan2.1)** | ~14GB | **AI avatar from photo + audio** | **APPROVED** |
+| Image-to-Video | Wan2.1 I2V 480p fp8 | ~13GB | Animate product images | WORKING |
+| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | Faster I2V generation | READY |
+| Image-to-Video | AnimateDiff | ~10GB | Motion graphics, loops | Available |
+| Talking Head (legacy) | FantasyTalking | ~6GB | Superseded by FantasyTalking | Deprecated |
+| Lip Sync | Wav2Lip | ~4GB | Sync any face to audio | Available |
+| Video Upscale | Real-ESRGAN | ~4GB | Enhance low-res clips | Available |
+| Frame Interpolation | RIFE | ~2GB | Smooth motion | Available |
 
 ### Workflows Created
 
@@ -68,7 +70,8 @@ Building a complete, scalable video production pipeline using existing tools:
 |----------|------|---------|
 | Image-to-Video (Wan2.1) | `workflows/image_to_video.json` | Main I2V workflow |
 | Image-to-Video (AnimateDiff) | `workflows/image_to_video_animatediff.json` | Loop animations |
-| Talking Head (SadTalker) | `workflows/talking_head.json` | Avatar videos |
+| **Talking Head (FantasyTalking)** | `workflows/talking_head_fantasy.json` | **Primary avatar videos** |
+| Talking Head (SadTalker) | `workflows/talking_head.json` | Legacy (deprecated) |
 | Lip Sync (Wav2Lip) | `workflows/lipsync_wav2lip.json` | Alternative lip sync |
 
 ---
@@ -124,12 +127,17 @@ Start-Service ComfyUI
 - [x] **Install SadTalker nodes** - INSTALLED (2026-01-27)
 - [x] Kling API lip sync available (KlingLipSyncAudioToVideoNode) - requires account
 - [x] Download SadTalker models - DOWNLOADED (2026-01-29, via SSH from Gaming PC)
-- [ ] Take/select a photo of yourself
-- [ ] Record a 10-second test audio
-- [x] Generate test talking head clip - SUCCESS (2026-01-29, via API from Gaming PC)
-- [ ] Evaluate quality vs HeyGen
+- [x] Generate test talking head clip (SadTalker) - SUCCESS (2026-01-29)
+- [x] **Install FantasyTalking** - INSTALLED (2026-02-01, ComfyUI-WanVideoWrapper + model)
+- [x] **Download FantasyTalking model** - `fantasytalking_fp16.safetensors` (1.68GB)
+- [x] **Download wav2vec2 model** - `facebook/wav2vec2-base-960h` (auto-downloaded)
+- [x] **Generate FantasyTalking test** - SUCCESS (2026-02-02, 512x512 49 frames)
+- [x] **Evaluate quality** - APPROVED. Better lip sync, no teeth distortion
+- [ ] Take/select a photo of yourself (have `avatar_photo.jpg` but need final choice)
+- [ ] Record production audio scripts
 
-**Status:** SadTalker TESTED AND WORKING. First talking head video generated via API.
+**Status:** FantasyTalking TESTED AND APPROVED. Replaces SadTalker as primary talking head.
+**Decision:** FantasyTalking is the production tool. SadTalker deprecated.
 
 **Installation notes (2026-01-27):**
 ```powershell
@@ -180,13 +188,20 @@ from torchvision.transforms.functional import rgb_to_grayscale
 - [ ] Screen record all demos (OBS)
 - [ ] Create Canva graphics (stats, callouts)
 
-### Step 5: Final Edit
+### Step 5: Automated Pipeline Assembly (NEW - 2026-01-30)
 
-- [ ] Edit Video 1 in Canva Pro
-- [ ] Edit Video 2 in Canva Pro
-- [ ] Edit Video 3 in Canva Pro
-- [ ] Create thumbnails
-- [ ] Export all as MP4 1080p
+**Replaced Canva editing with automated FFmpeg pipeline.**
+
+- [x] Build 5-stage pipeline scripts (`video-production/scripts/`)
+- [x] Create normalization standard config
+- [x] Create 3 video structure configs (JSON timelines)
+- [x] Test normalization on existing video (1024x1024 8fps -> 1920x1080 30fps)
+- [x] Test validation (12/12 checks pass)
+- [ ] Provide user assets (14 files -- see checklist below)
+- [ ] Run Stage 2: generate SadTalker + I2V clips
+- [ ] Run Stage 3: normalize all clips
+- [ ] Run Stage 4: assemble 3 videos
+- [ ] Run Stage 5: validate + export to fiverr-assets/
 
 ### Step 6: Publish
 
@@ -250,11 +265,11 @@ Available for image-to-video conversion:
 
 | Segment | Duration | Content | Tool |
 |---------|----------|---------|------|
-| Hook | 0-8s | Your face: "What if AI could plan..." | SadTalker |
+| Hook | 0-8s | Your face: "What if AI could plan..." | FantasyTalking |
 | Demo | 8-45s | Screen recording: automation_brain.py | OBS |
 | Results | 45-65s | Animated candle images | ComfyUI Wan2.1 |
 | Stats | 65-75s | "30 posts, 5 images, 10 minutes" | Canva |
-| CTA | 75-90s | Your face: "Ready to automate? Order now." | SadTalker |
+| CTA | 75-90s | Your face: "Ready to automate? Order now." | FantasyTalking |
 
 ### Video 2: AI Image Generation (45-60s)
 
@@ -263,13 +278,13 @@ Available for image-to-video conversion:
 | Hook | 0-5s | Quick image montage | Canva |
 | Demo | 5-35s | ComfyUI generating image live | OBS |
 | Gallery | 35-50s | Ken Burns slideshow | Canva |
-| CTA | 50-60s | Your face + "Order today" | SadTalker |
+| CTA | 50-60s | Your face + "Order today" | FantasyTalking |
 
 ### Video 3: Analytics Dashboard (45-60s)
 
 | Segment | Duration | Content | Tool |
 |---------|----------|---------|------|
-| Hook | 0-5s | Your face: "See how your content performs" | SadTalker |
+| Hook | 0-5s | Your face: "See how your content performs" | FantasyTalking |
 | Demo | 5-40s | Dashboard walkthrough | OBS |
 | Features | 40-50s | Callout graphics | Canva |
 | CTA | 50-60s | Text: "Included with every package" | Canva |
@@ -279,16 +294,19 @@ Available for image-to-video conversion:
 ## Workflow: Creating a Talking Head Clip
 
 ```
-1. Prepare photo (well-lit face, neutral expression)
+1. Prepare photo (well-lit face, neutral expression, front-facing)
 2. Record audio script (clear voice, quiet room)
-3. Copy photo + audio to The Machine
-4. Queue SadTalker workflow via ComfyUI API:
-   - Source image: your_photo.png
+3. Copy photo + audio to The Machine (C:\ComfyUI\input\)
+4. Queue FantasyTalking workflow via ComfyUI API:
+   - Source image: your_photo.png (resized to 512x512 by workflow)
    - Audio file: script_segment.wav
-   - Settings: preprocess=crop, enhancer=gfpgan
-5. Retrieve output video
-6. Import to Canva for final editing
+   - Model: fantasytalking_fp16 + Wan2.1 I2V 480p fp8
+   - Settings: 20-30 steps, cfg 5.0, unipc, TeaCache, BlockSwap 15
+5. Retrieve output video from C:\ComfyUI\output\
+6. Normalize to 1080p30 via pipeline Stage 3
 ```
+
+**API reference:** `temp_fantasytalking_test.py` (working API workflow)
 
 **automation_brain.py integration:**
 ```bash
@@ -344,7 +362,8 @@ python automation_brain.py "generate talking head from photo.png with audio.wav"
 ## Verification Criteria
 
 - [x] ComfyUI can generate 3-5 second video clips from images - VERIFIED
-- [x] SadTalker produces talking head video - VERIFIED (quality evaluation pending)
+- [x] SadTalker produces talking head video - VERIFIED (superseded by FantasyTalking)
+- [x] FantasyTalking produces talking head video - VERIFIED & APPROVED (2026-02-02)
 - [ ] Full workflow tested end-to-end before production
 - [ ] All 3 videos exported under 2 minutes each
 - [ ] Videos uploaded to Fiverr
@@ -395,6 +414,18 @@ Verified The Machine status via ComfyUI API:
 - 81 frames @ 30 steps = ~42 min (~2 frames/min)
 - For faster tests, use 33 frames @ 20 steps (~10 min)
 - 480p fp8 model works well, 720p needs more paging file
+
+**Wan2.1 I2V Realism Tips:**
+
+1. **Start from a strong still image** -- Generate or hand-pick a clean, well-lit, realistic key image first (Flux, SDXL, or WAN image model), then feed that into i2v_wan instead of a noisy/stylized base.
+
+2. **Write longer, structured prompts (80-120 words)** -- Clearly specify subject, environment, motion, and camera behavior. Example: *"realistic 4K video of..., soft natural lighting, shallow depth of field, camera slowly dolly-in, no rapid movement."*
+
+3. **Focus the prompt on motion, not redesign** -- Describe how the existing scene should move ("the woman gently turns her head and smiles; background stays fixed; subtle camera pan right") instead of re-describing a new character or different setting.
+
+4. **Keep motion simple** -- Small head/eye/hand movements, slight camera pans/zooms, gentle parallax. Complex multi-action scenes tend to produce warped limbs and broken physics.
+
+5. **Use negative prompts** -- Include: *"no distortion, no warped hands, no glitching, no flicker, no fast motion, no morphing, no unnatural movement"*
 
 ---
 
@@ -525,5 +556,177 @@ Verified The Machine status via ComfyUI API:
 ```
 
 **Next:** Evaluate video quality. If acceptable, record real audio scripts and generate production clips.
+
+---
+
+### 2026-01-30: Automated Video Production Pipeline Built
+
+**Built a 5-stage FFmpeg pipeline to replace manual Canva editing.**
+
+All scripts tested and working. Pipeline is ready for user-provided assets.
+
+**What was built:**
+
+```
+video-production/
+├── scripts/
+│   ├── setup_environment.py        # Stage 1: Verify FFmpeg, SSH, ComfyUI, dirs
+│   ├── generate_comfyui_assets.py  # Stage 2: SadTalker + Wan2.1 I2V via API
+│   ├── normalize_clips.py          # Stage 3: Re-encode ALL clips to 1080p30
+│   ├── assemble_video.py           # Stage 4: FFmpeg concat + crossfades + audio
+│   └── validate_outputs.py         # Stage 5: ffprobe checks + thumbnails + export
+├── configs/
+│   ├── normalization_standard.json # Target: 1920x1080, 30fps, H.264, AAC 48kHz
+│   ├── video1_structure.json       # AI Marketing Automation (6 segments, 75-90s)
+│   ├── video2_structure.json       # AI Image Generation (4 segments, 45-60s)
+│   └── video3_structure.json       # Analytics Dashboard (4 segments, 45-60s)
+└── logs/
+    ├── ffprobe_reports/            # Per-clip probe data
+    └── validation_reports/         # Per-run validation JSON
+```
+
+**Test results:**
+- `setup_environment.py`: All green (FFmpeg 8.0.1, SSH, ComfyUI RTX 5060 Ti 14.8GB free)
+- `normalize_clips.py`: 1024x1024 8fps no-audio -> 1920x1080 30fps stereo AAC
+- `validate_outputs.py`: 12/12 checks pass on normalized output
+
+**Pitfalls handled in the pipeline:**
+| Issue | Solution |
+|-------|----------|
+| AI clips have different codecs/FPS/resolution | Stage 3 normalizes everything to one standard |
+| SadTalker outputs 512x512 | Pad to 1080p with black pillarbox |
+| Wan2.1 outputs 480p @ 24fps | Upscale + fps conversion |
+| Silent video clips (I2V has no audio) | Auto-generate silent stereo 48kHz track |
+| Audio sample rate drift (44.1kHz vs 48kHz) | `aresample=48000:async=1` on all audio |
+| Metadata inconsistencies | `setsar=1`, `setpts=PTS-STARTPTS` on all clips |
+| xfade complex filter failures | Auto-fallback to concat demuxer |
+| Windows Unicode in terminal | ASCII-only output characters |
+
+---
+
+## Automated Pipeline Reference
+
+### How to Run the Pipeline
+
+```bash
+# Stage 1: Verify everything is ready
+python video-production/scripts/setup_environment.py
+
+# Stage 2: Generate AI clips (after placing user assets)
+python video-production/scripts/generate_comfyui_assets.py --status    # check ComfyUI
+python video-production/scripts/generate_comfyui_assets.py --sadtalker # SadTalker only
+python video-production/scripts/generate_comfyui_assets.py --i2v       # Wan2.1 only
+python video-production/scripts/generate_comfyui_assets.py             # both
+
+# Stage 3: Normalize all clips to 1080p30
+python video-production/scripts/normalize_clips.py                     # all raw clips
+python video-production/scripts/normalize_clips.py path/to/clip.mp4    # single clip
+python video-production/scripts/normalize_clips.py --probe path/clip   # probe only
+
+# Stage 4: Assemble final videos
+python video-production/scripts/assemble_video.py video-production/configs/video1_structure.json
+python video-production/scripts/assemble_video.py video-production/configs/video2_structure.json
+python video-production/scripts/assemble_video.py video-production/configs/video3_structure.json
+python video-production/scripts/assemble_video.py --all                # all 3
+python video-production/scripts/assemble_video.py --dry-run <config>   # preview command
+python video-production/scripts/assemble_video.py --demuxer <config>   # safe concat (no transitions)
+
+# Stage 5: Validate + export
+python video-production/scripts/validate_outputs.py                    # validate all
+python video-production/scripts/validate_outputs.py --export           # validate + copy to fiverr-assets/
+python video-production/scripts/validate_outputs.py --thumbnails       # generate 1280x720 thumbnails
+```
+
+### User Assets Required Before Stage 2
+
+Place these files in `demo-clients/candle-co/`:
+
+| File | Location | Description |
+|------|----------|-------------|
+| `avatar_photo.png` | `photos/` | Your face photo (well-lit, front-facing, neutral) |
+| `v1_intro.wav` | `audio/` | "What if AI could plan..." (~8s) |
+| `v1_outro.wav` | `audio/` | "30 posts. Custom images..." (~15s) |
+| `v2_cta.wav` | `audio/` | "Professional AI images..." (~10s) |
+| `v3_intro.wav` | `audio/` | "See exactly how..." (~5s) |
+| `demo_marketing.mp4` | `screen-recordings/` | automation_brain.py terminal demo |
+| `demo_comfyui.mp4` | `screen-recordings/` | ComfyUI image generation demo |
+| `demo_dashboard.mp4` | `screen-recordings/` | Analytics dashboard walkthrough |
+| `stats_animation.mp4` | `canva-exports/` | Stats numbers graphic |
+| `calendar_preview.mp4` | `canva-exports/` | Calendar preview mockup |
+| `image_montage.mp4` | `canva-exports/` | Quick-cut 5-image montage |
+| `ken_burns_slideshow.mp4` | `canva-exports/` | 5-image Ken Burns slideshow |
+| `feature_callouts.mp4` | `canva-exports/` | Feature callout boxes animation |
+| `cta_text_animation.mp4` | `canva-exports/` | CTA text animation |
+
+Run `python video-production/scripts/setup_environment.py` to see which assets are still missing.
+
+### Normalization Standard
+
+All clips get re-encoded to:
+- **Video:** 1920x1080, 30fps, H.264, yuv420p, CRF 23
+- **Audio:** AAC, 48kHz, stereo, 192kbps
+- **Filters:** scale+pad+fps+setsar+setpts (video), aresample+aformat (audio)
+
+### Output Locations
+
+```
+demo-clients/candle-co/
+├── video-assets/
+│   ├── i2v/          # Raw Wan2.1 clips (Stage 2 output)
+│   ├── fantasytalking/ # Raw talking head clips (Stage 2 output)
+│   └── normalized/   # All clips standardized (Stage 3 output)
+└── final-videos/     # 3 finished MP4s (Stage 4 output)
+
+fiverr-assets/
+├── videos/           # Final exports (Stage 5 copies here)
+└── thumbnails/       # 1280x720 PNGs (Stage 5 generates)
+```
+
+---
+
+### 2026-02-02: FantasyTalking Tested & Approved
+
+**FantasyTalking replaces SadTalker as primary talking head tool.**
+
+**Why switch:**
+- SadTalker has teeth distortion issues (confirmed in testing)
+- FantasyTalking (Alibaba, Wan2.1 backbone) produces better lip sync
+- Better identity preservation, more natural head movements
+- ComfyUI-native via WanVideoWrapper (same ecosystem as I2V)
+
+**Test run:**
+- Input: `avatar_photo.jpg` + `test_audio.wav` (from `C:\ComfyUI\input\`)
+- Output: `FantasyTalking_test_00001-audio.mp4` (512x512, 49 frames @ 24fps, 2.04s)
+- Settings: 20 steps, cfg 5.0, unipc scheduler, TeaCache enabled, BlockSwap 15
+- Generation time: ~20-25 min on RTX 5060 Ti 16GB
+- File size: 271 KB
+- Quality: **APPROVED** - good lip sync, no teeth distortion
+
+**Models required for FantasyTalking:**
+- `WanVideo\fantasytalking_fp16.safetensors` (1.68GB) - in diffusion_models
+- `Wan2.1\wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors` (16GB) - base I2V model
+- `facebook/wav2vec2-base-960h` (~360MB) - auto-downloaded to models/transformers
+- `umt5_xxl_fp16.safetensors` - text encoder
+- `wan_2.1_vae.safetensors` - VAE
+- `CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors` - vision encoder
+
+**Custom nodes required:**
+- ComfyUI-WanVideoWrapper (fantasytalking/ subfolder)
+- ComfyUI-KJNodes (ImageResizeKJv2)
+- ComfyUI-VideoHelperSuite (VHS_VideoCombine)
+
+**API workflow notes (for `generate_comfyui_assets.py` integration):**
+- Use `temp_fantasytalking_test.py` as reference for API format
+- Key fix: `WanVideoBlockSwap` needs `vace_blocks_to_swap: 0` explicitly
+- `WanVideoTextEncode` uses `positive_prompt`/`negative_prompt` (not `prompt`)
+- Node parameter names differ from example workflow (API was updated)
+- wav2vec model auto-downloads on first run
+
+**Also confirmed downloaded (GGUF speed upgrade):**
+- `wan2.1-i2v-14b-480p-Q5_K_M.gguf` (12.7GB) - quantized I2V model
+- `umt5-xxl-encoder-Q5_K_M.gguf` (4.1GB) - quantized text encoder
+- ComfyUI-GGUF nodes installed
+
+**Next:** Record production audio scripts, finalize avatar photo, then generate production clips with FantasyTalking.
 
 ---

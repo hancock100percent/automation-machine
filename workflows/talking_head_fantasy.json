@@ -1,0 +1,268 @@
+{
+  "11": {
+    "class_type": "LoadWanVideoT5TextEncoder",
+    "inputs": {
+      "model_name": "umt5_xxl_fp16.safetensors",
+      "precision": "bf16",
+      "load_device": "offload_device",
+      "quantization": "disabled"
+    }
+  },
+  "22": {
+    "class_type": "WanVideoModelLoader",
+    "inputs": {
+      "model": "Wan2.1\\wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors",
+      "base_precision": "fp16",
+      "quantization": "fp8_e4m3fn",
+      "load_device": "offload_device",
+      "attention": "sdpa",
+      "block_swap_args": [
+        "39",
+        0
+      ],
+      "fantasytalking_model": [
+        "68",
+        0
+      ]
+    }
+  },
+  "38": {
+    "class_type": "WanVideoVAELoader",
+    "inputs": {
+      "model_name": "wan_2.1_vae.safetensors",
+      "precision": "bf16"
+    }
+  },
+  "39": {
+    "class_type": "WanVideoBlockSwap",
+    "inputs": {
+      "blocks_to_swap": 15,
+      "offload_img_emb": true,
+      "offload_txt_emb": false,
+      "vace_blocks_to_swap": 0
+    }
+  },
+  "52": {
+    "class_type": "WanVideoTeaCache",
+    "inputs": {
+      "rel_l1_thresh": 0.225,
+      "start_step": 1,
+      "end_step": -1,
+      "cache_device": "offload_device",
+      "use_coefficients": true
+    }
+  },
+  "58": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "avatar_photo.jpg",
+      "upload": "image"
+    }
+  },
+  "59": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": {
+      "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"
+    }
+  },
+  "65": {
+    "class_type": "WanVideoClipVisionEncode",
+    "inputs": {
+      "clip_vision": [
+        "59",
+        0
+      ],
+      "image_1": [
+        "74",
+        0
+      ],
+      "strength_1": 1.0,
+      "strength_2": 1.0,
+      "crop": "center",
+      "combine_embeds": "average",
+      "force_offload": true
+    }
+  },
+  "68": {
+    "class_type": "FantasyTalkingModelLoader",
+    "inputs": {
+      "model": "WanVideo\fantasytalking_fp16.safetensors",
+      "base_precision": "fp16"
+    }
+  },
+  "71": {
+    "class_type": "DownloadAndLoadWav2VecModel",
+    "inputs": {
+      "model": "facebook/wav2vec2-base-960h",
+      "base_precision": "fp16",
+      "load_device": "main_device"
+    }
+  },
+  "72": {
+    "class_type": "LoadAudio",
+    "inputs": {
+      "audio": "test_audio.wav"
+    }
+  },
+  "73": {
+    "class_type": "FantasyTalkingWav2VecEmbeds",
+    "inputs": {
+      "wav2vec_model": [
+        "71",
+        0
+      ],
+      "fantasytalking_model": [
+        "68",
+        0
+      ],
+      "audio": [
+        "72",
+        0
+      ],
+      "num_frames": 81,
+      "fps": 24.0,
+      "audio_scale": 1.0,
+      "audio_cfg_scale": 1.0
+    }
+  },
+  "74": {
+    "class_type": "ImageResizeKJv2",
+    "inputs": {
+      "image": [
+        "58",
+        0
+      ],
+      "width": 512,
+      "height": 512,
+      "upscale_method": "lanczos",
+      "keep_proportion": "crop",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 2
+    }
+  },
+  "63": {
+    "class_type": "WanVideoImageToVideoEncode",
+    "inputs": {
+      "vae": [
+        "38",
+        0
+      ],
+      "clip_embeds": [
+        "65",
+        0
+      ],
+      "start_image": [
+        "74",
+        0
+      ],
+      "width": 512,
+      "height": 512,
+      "num_frames": 81,
+      "noise_aug_strength": 0.03,
+      "start_latent_strength": 1.0,
+      "end_latent_strength": 1.0,
+      "force_offload": true
+    }
+  },
+  "16": {
+    "class_type": "WanVideoTextEncode",
+    "inputs": {
+      "t5": [
+        "11",
+        0
+      ],
+      "model_to_offload": [
+        "22",
+        0
+      ],
+      "positive_prompt": "A person is speaking directly to camera, natural head movements, subtle expressions, professional lighting, talking naturally",
+      "negative_prompt": "distortion, warped face, glitching, unnatural movement, blurry, low quality",
+      "force_offload": true
+    }
+  },
+  "78": {
+    "class_type": "CreateCFGScheduleFloatList",
+    "inputs": {
+      "steps": 30,
+      "start_value": 5,
+      "end_value": 5,
+      "interpolation": "linear",
+      "end_at_step": 0,
+      "end_at_value": 0.1
+    }
+  },
+  "69": {
+    "class_type": "WanVideoSampler",
+    "inputs": {
+      "model": [
+        "22",
+        0
+      ],
+      "text_embeds": [
+        "16",
+        0
+      ],
+      "image_embeds": [
+        "63",
+        0
+      ],
+      "cache_args": [
+        "52",
+        0
+      ],
+      "fantasytalking_embeds": [
+        "73",
+        0
+      ],
+      "steps": 30,
+      "cfg": 5.0,
+      "shift": 5.0,
+      "seed": 42,
+      "force_offload": true,
+      "scheduler": "unipc",
+      "riflex_freq_index": 1
+    }
+  },
+  "28": {
+    "class_type": "WanVideoDecode",
+    "inputs": {
+      "vae": [
+        "38",
+        0
+      ],
+      "samples": [
+        "69",
+        0
+      ],
+      "enable_vae_tiling": false,
+      "tile_x": 272,
+      "tile_y": 272,
+      "tile_stride_x": 144,
+      "tile_stride_y": 128
+    }
+  },
+  "30": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": [
+        "28",
+        0
+      ],
+      "audio": [
+        "72",
+        0
+      ],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "FantasyTalking",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true
+    }
+  }
+}

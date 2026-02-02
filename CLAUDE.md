@@ -81,8 +81,13 @@ python auto_doc.py --eod "summary"              # End of day update
 - [x] Case study documentation (demo-clients/candle-co/)
 - [x] Gig descriptions (fiverr-assets/)
 - [x] Generate sample images (14 generated)
-- [ ] Video demos (IN PROGRESS - Wan2.1 I2V WORKING)
+- [ ] Video demos (IN PROGRESS - FantasyTalking + Wan2.1 GGUF)
   - [x] Wan2.1 video generation tested (i2v_wan_test_00001.mp4)
+  - [x] TTS audio generated (edge-tts, 4 WAV files)
+  - [x] FantasyTalking installed (WanVideoWrapper + model)
+  - [x] FantasyTalking TESTED & APPROVED (2026-02-02, replaces SadTalker)
+  - [x] Wan2.1 I2V GGUF downloaded (Q5_K_M quantized, 12.7GB)
+  - [x] umt5-xxl GGUF encoder downloaded (Q5_K_M, 4.1GB)
   - [ ] Video 1: AI Marketing Automation (60-90s)
   - [ ] Video 2: AI Image Generation (45-60s)
   - [ ] Video 3: Analytics Dashboard (45-60s)
@@ -132,6 +137,8 @@ PERPLEXITY_API_KEY    # Perplexity web research
 | `image_to_video.json` | Wan2.1 I2V for animating images |
 | `image_to_video_animatediff.json` | AnimateDiff for motion loops |
 | `talking_head.json` | SadTalker for avatar videos |
+| `talking_head_fantasy.json` | FantasyTalking (Wan2.1 backbone lip sync) |
+| `image_to_video_wan22.json` | Wan2.1 I2V GGUF (faster, higher res) |
 | `lipsync_wav2lip.json` | Wav2Lip alternative lip sync |
 
 ## Knowledge Base Structure
@@ -235,11 +242,14 @@ Video production capabilities on The Machine (RTX 5060 Ti 16GB).
 | Feature | Model | VRAM | Status |
 |---------|-------|------|--------|
 | Image-to-Video | Wan2.1 I2V 480p | ~13GB | **WORKING** - tested 2026-01-26 |
+| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | **READY** - downloaded 12.7GB |
+| Talking Heads | FantasyTalking (Wan2.1) | ~14GB | **TESTED & APPROVED** 2026-02-02 |
+| Talking Heads (legacy) | SadTalker | ~6GB | Superseded by FantasyTalking |
 | Motion Loops | AnimateDiff | ~10GB | Nodes ready |
-| Talking Heads | SadTalker | ~6GB | Nodes installed, needs models |
 | Lip Sync | Wav2Lip | ~4GB | Nodes ready |
+| TTS Audio | edge-tts (Microsoft) | CPU | **WORKING** - 4 audio files generated |
 
-### Current Status (2026-01-26)
+### Current Status (2026-02-02)
 
 **ComfyUI:** v0.7.0 running at http://100.64.130.71:8188
 **GPU:** RTX 5060 Ti 16GB (~13GB used during video gen)
@@ -250,6 +260,9 @@ Video production capabilities on The Machine (RTX 5060 Ti 16GB).
 | Wan2.1 nodes | INSTALLED (27 nodes) |
 | AnimateDiff | INSTALLED (30+ nodes) |
 | SadTalker | INSTALLED (needs models downloaded) |
+| ComfyUI-WanVideoWrapper | INSTALLED (FantasyTalking nodes) |
+| ComfyUI-KJNodes | INSTALLED (image resize) |
+| ComfyUI-GGUF | INSTALLED (GGUF model loaders) |
 | Kling Lip Sync | AVAILABLE (API-based) |
 | **Wan2.1 I2V 480p model** | WORKING (fp8, ~7GB) |
 | **Wan2.1 I2V 720p model** | AVAILABLE (fp16, needs more RAM) |
@@ -264,8 +277,17 @@ C:\ComfyUI\models\diffusion_models\Wan2.1\
   - wan2.1_i2v_480p_14B_fp8_e4m3fn.safetensors (WORKING)
   - wan2.1_i2v_720p_14B_fp16.safetensors (needs more paging file)
 
+C:\ComfyUI\models\diffusion_models\WanVideo\
+  - fantasytalking_fp16.safetensors (INSTALLED - FantasyTalking lip sync)
+
+C:\ComfyUI\models\unet\
+  - wan2.1-i2v-14b-480p-Q5_K_M.gguf (DOWNLOADING - GGUF quantized I2V)
+
 C:\ComfyUI\models\text_encoders\
   - umt5_xxl_fp16.safetensors (required for Wan - NOT t5xxl)
+
+C:\ComfyUI\models\clip\
+  - umt5-xxl-encoder-Q5_K_M.gguf (DOWNLOADING - GGUF quantized encoder)
 
 C:\ComfyUI\models\vae\
   - wan_2.1_vae.safetensors
@@ -274,7 +296,20 @@ C:\ComfyUI\models\clip_vision\
   - CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
 ```
 
-**Performance:** 81 frames @ 30 steps = ~42 min on RTX 5060 Ti
+**Performance:**
+- Wan2.1 fp8: 81 frames @ 30 steps = ~42 min on RTX 5060 Ti
+- Wan2.1 GGUF Q5: 81 frames @ 30 steps = ~7-15 min (estimated)
+- FantasyTalking: ~20-45 min per clip
+
+### Wan2.1 I2V Realism Tips
+
+1. **Start from a strong still** -- Clean, well-lit, realistic source image (Flux/SDXL/WAN image model)
+2. **Longer prompts (80-120 words)** -- Specify subject, environment, motion, camera (e.g. "soft natural lighting, shallow DOF, camera slowly dolly-in")
+3. **Prompt motion, not redesign** -- Describe how the scene moves, don't re-describe the scene itself
+4. **Keep motion simple** -- Small movements, gentle pans/zooms; complex actions = warped limbs
+5. **Use negative prompts** -- "no distortion, no warped hands, no glitching, no flicker, no fast motion"
+
+See `fiverr-assets/VIDEO-PRODUCTION.md` for full details.
 
 ### Restarting ComfyUI (The Machine)
 
