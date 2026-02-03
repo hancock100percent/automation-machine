@@ -1,0 +1,443 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-03",
+  "vision": "Cohesive brand identity through polished Fiverr profile with marketing, branding, content creation services",
+  "brains": [
+    {
+      "id": "claude",
+      "type": "cloud",
+      "cost": "paid",
+      "use_case": "complex/novel tasks"
+    },
+    {
+      "id": "perplexity",
+      "type": "cloud",
+      "cost": "cheap",
+      "use_case": "web research"
+    },
+    {
+      "id": "ollama-deepseek",
+      "type": "local",
+      "cost": "free",
+      "use_case": "simple queries"
+    },
+    {
+      "id": "ollama-qwen",
+      "type": "local",
+      "cost": "free",
+      "use_case": "code/analysis"
+    },
+    {
+      "id": "comfyui",
+      "type": "local",
+      "cost": "free",
+      "use_case": "image/video generation"
+    }
+  ],
+  "domains": [
+    {
+      "id": "marketing",
+      "status": "active",
+      "priority": 1,
+      "certs": [
+        "IBM PM",
+        "CAPM"
+      ],
+      "description": "Fiverr gigs, AI automation services"
+    },
+    {
+      "id": "trading",
+      "status": "planned",
+      "priority": 2,
+      "certs": [
+        "Series 65"
+      ],
+      "description": "Financial analysis and trading"
+    },
+    {
+      "id": "auto-repair",
+      "status": "planned",
+      "priority": 3,
+      "certs": [
+        "ASE"
+      ],
+      "description": "Automotive diagnostics"
+    },
+    {
+      "id": "machine-learning",
+      "status": "learning",
+      "priority": 4,
+      "certs": [
+        "Deep Learning AI",
+        "AWS Solutions Architect"
+      ],
+      "description": "ML/AI development"
+    },
+    {
+      "id": "security",
+      "status": "planned",
+      "priority": 5,
+      "certs": [
+        "CompTIA Security+"
+      ],
+      "description": "Cybersecurity"
+    },
+    {
+      "id": "data-analytics",
+      "status": "planned",
+      "priority": 6,
+      "certs": [
+        "Google Data Analytics"
+      ],
+      "description": "Data analysis and visualization"
+    },
+    {
+      "id": "sales",
+      "status": "planned",
+      "priority": 7,
+      "certs": [
+        "Salesforce Admin"
+      ],
+      "description": "CRM and sales automation"
+    },
+    {
+      "id": "3d-prints",
+      "status": "hobby",
+      "priority": 8,
+      "certs": [],
+      "description": "3D printing projects"
+    },
+    {
+      "id": "music",
+      "status": "hobby",
+      "priority": 9,
+      "certs": [],
+      "description": "Music production"
+    },
+    {
+      "id": "gaming",
+      "status": "hobby",
+      "priority": 10,
+      "certs": [],
+      "description": "Gaming (kirby)"
+    },
+    {
+      "id": "locksmithing",
+      "status": "planned",
+      "priority": 11,
+      "certs": [
+        "Locksmithing"
+      ],
+      "description": "Physical security"
+    }
+  ],
+  "certifications": {
+    "roadmap": [
+      {
+        "name": "IBM Product Manager",
+        "domain": "marketing",
+        "status": "planned",
+        "priority": 1
+      },
+      {
+        "name": "Google Data Analytics",
+        "domain": "data-analytics",
+        "status": "planned",
+        "priority": 2
+      },
+      {
+        "name": "AWS Solutions Architect",
+        "domain": "machine-learning",
+        "status": "planned",
+        "priority": 3
+      },
+      {
+        "name": "CompTIA Security+",
+        "domain": "security",
+        "status": "planned",
+        "priority": 4
+      },
+      {
+        "name": "CAPM",
+        "domain": "marketing",
+        "status": "planned",
+        "priority": 5
+      },
+      {
+        "name": "Salesforce Admin",
+        "domain": "sales",
+        "status": "planned",
+        "priority": 6
+      },
+      {
+        "name": "Deep Learning AI",
+        "domain": "machine-learning",
+        "status": "planned",
+        "priority": 7
+      },
+      {
+        "name": "ASE",
+        "domain": "auto-repair",
+        "status": "planned",
+        "priority": 8
+      },
+      {
+        "name": "Series 65",
+        "domain": "trading",
+        "status": "planned",
+        "priority": 9
+      },
+      {
+        "name": "Locksmithing",
+        "domain": "locksmithing",
+        "status": "planned",
+        "priority": 10
+      }
+    ]
+  },
+  "inputs": [
+    "notes",
+    "email",
+    "podcasts",
+    "youtube",
+    "books",
+    "training-docs"
+  ],
+  "outputs": [
+    "image",
+    "video",
+    "audio",
+    "code",
+    "literature",
+    "product",
+    "website"
+  ],
+  "channels": [
+    "fiverr",
+    "instagram",
+    "facebook",
+    "linkedin",
+    "youtube"
+  ],
+  "tools": [
+    "excel",
+    "word",
+    "notepad",
+    "excalidraw",
+    "mindmap",
+    "vscode",
+    "canvaPro",
+    "git",
+    "calendar",
+    "termius"
+  ],
+  "infrastructure": [
+    "media-server",
+    "storage",
+    "onedrive",
+    "hard-drive",
+    "nord-vpn",
+    "tailscale"
+  ],
+  "sprints": [
+    {
+      "id": "2026-W06",
+      "name": "Fiverr Launch Sprint",
+      "start": "2026-02-03",
+      "end": "2026-02-09",
+      "status": "active",
+      "goals": [
+        "Complete 3 demo videos",
+        "Polish Fiverr profile",
+        "Publish gigs"
+      ],
+      "tasks": [
+        {
+          "id": "video-1",
+          "name": "AI Marketing Automation Demo (60-90s)",
+          "status": "in_progress",
+          "assignee": "video-production"
+        },
+        {
+          "id": "video-2",
+          "name": "AI Image Generation Demo (45-60s)",
+          "status": "pending",
+          "assignee": "video-production"
+        },
+        {
+          "id": "video-3",
+          "name": "Analytics Dashboard Demo (45-60s)",
+          "status": "pending",
+          "assignee": "video-production"
+        },
+        {
+          "id": "profile",
+          "name": "Polish Fiverr profile",
+          "status": "pending",
+          "assignee": null
+        },
+        {
+          "id": "gig-publish",
+          "name": "Publish gigs on Fiverr",
+          "status": "pending",
+          "assignee": null,
+          "blocked_by": [
+            "video-1",
+            "video-2",
+            "video-3",
+            "profile"
+          ]
+        }
+      ],
+      "retrospective": null
+    }
+  ],
+  "teams": {
+    "video-production": {
+      "leader": "main-claude",
+      "members": [
+        "video-researcher",
+        "asset-generator",
+        "editor"
+      ],
+      "description": "Produces demo videos using ComfyUI (Wan2.1, FantasyTalking)",
+      "active": true
+    },
+    "content-production": {
+      "leader": "main-claude",
+      "members": [
+        "researcher",
+        "writer",
+        "artist",
+        "editor"
+      ],
+      "description": "Creates marketing content (images, copy, social posts)",
+      "active": false
+    },
+    "certification-study": {
+      "leader": "main-claude",
+      "members": [
+        "curriculum-builder",
+        "quiz-generator",
+        "progress-tracker"
+      ],
+      "description": "Manages certification study and progress",
+      "active": false
+    },
+    "trading-analysis": {
+      "leader": "main-claude",
+      "members": [
+        "market-researcher",
+        "analyst",
+        "reporter"
+      ],
+      "description": "Performs market research and trading analysis",
+      "active": false
+    }
+  },
+  "agent_types": {
+    "video-researcher": {
+      "base": "Explore",
+      "tools": [
+        "Glob",
+        "Grep",
+        "Read",
+        "WebFetch"
+      ],
+      "focus": "ComfyUI workflows and video production"
+    },
+    "asset-generator": {
+      "base": "general-purpose",
+      "tools": [
+        "Bash",
+        "Read",
+        "Write"
+      ],
+      "focus": "Run ComfyUI jobs via API"
+    },
+    "editor": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write",
+        "Bash"
+      ],
+      "focus": "Review and polish content"
+    },
+    "researcher": {
+      "base": "Explore",
+      "tools": [
+        "Glob",
+        "Grep",
+        "Read",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "focus": "Gather information"
+    },
+    "writer": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write"
+      ],
+      "focus": "Draft content"
+    },
+    "artist": {
+      "base": "general-purpose",
+      "tools": [
+        "Bash"
+      ],
+      "focus": "Generate images via ComfyUI"
+    },
+    "curriculum-builder": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write",
+        "WebFetch"
+      ],
+      "focus": "Create study plans"
+    },
+    "quiz-generator": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write"
+      ],
+      "focus": "Create practice questions"
+    },
+    "progress-tracker": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write"
+      ],
+      "focus": "Monitor completion"
+    },
+    "market-researcher": {
+      "base": "general-purpose",
+      "tools": [
+        "WebSearch",
+        "WebFetch"
+      ],
+      "focus": "Fetch market data"
+    },
+    "analyst": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write"
+      ],
+      "focus": "Run analysis"
+    },
+    "reporter": {
+      "base": "general-purpose",
+      "tools": [
+        "Read",
+        "Write"
+      ],
+      "focus": "Generate reports"
+    }
+  }
+}

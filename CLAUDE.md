@@ -59,6 +59,19 @@ python automation_brain.py --tool comfyui-video-talking-head "avatar from photo.
 python automation_brain.py --stats              # View costs
 python automation_brain.py --tools              # List available tools
 
+# Sprint Management
+python automation_brain.py --sprint             # Show current sprint
+python automation_brain.py --standup            # Generate standup report
+python automation_brain.py --teams              # Show agent teams
+python automation_brain.py --team "spawn video-production"  # Spawn team
+
+# Knowledge Ingestion
+python knowledge_ingest.py --youtube "URL"      # Ingest YouTube video
+python knowledge_ingest.py --audio "file.mp3"   # Ingest podcast/audio
+python knowledge_ingest.py --pdf "book.pdf"     # Ingest PDF document
+python knowledge_ingest.py --web "URL"          # Ingest web article
+python knowledge_ingest.py --list               # List training docs
+
 # Documentation
 python auto_doc.py --update-projects            # Update project docs
 python auto_doc.py --eod "summary"              # End of day update
@@ -100,10 +113,13 @@ python auto_doc.py --eod "summary"              # End of day update
 | File | Purpose |
 |------|---------|
 | `automation_brain.py` | Main orchestration engine |
+| `comfyui_job.py` | Long-running ComfyUI job manager (fire-and-forget) |
+| `knowledge_ingest.py` | Training document pipeline (YouTube, podcasts, PDFs) |
 | `auto_doc.py` | Auto-documentation system |
 | `config.yaml` | Model configs, routing thresholds |
 | `tools_config.json` | Tool integrations (Perplexity, ComfyUI, Claude) |
 | `usage_log.json` | Cost tracking database |
+| `projects/registry.json` | Sprint tracking, agent teams, project domains |
 | `HANDOFF.md` | Cross-LLM handoff protocol |
 | `fiverr-assets/VIDEO-PRODUCTION.md` | Video production tracker |
 | `demo-clients/candle-co/video-scripts.md` | Demo video scripts |
@@ -134,11 +150,11 @@ PERPLEXITY_API_KEY    # Perplexity web research
 |----------|---------|
 | `sdxl_basic.json` | Original basic SDXL workflow |
 | `sdxl_quality.json` | Enhanced with refiner + quality prompts |
-| `image_to_video.json` | Wan2.1 I2V for animating images |
+| `image_to_video.json` | **Wan2.1 I2V fp8 (RECOMMENDED)** - ~42 min |
 | `image_to_video_animatediff.json` | AnimateDiff for motion loops |
-| `talking_head.json` | SadTalker for avatar videos |
-| `talking_head_fantasy.json` | FantasyTalking (Wan2.1 backbone lip sync) |
-| `image_to_video_wan22.json` | Wan2.1 I2V GGUF (faster, higher res) |
+| `talking_head.json` | SadTalker for avatar videos (legacy) |
+| `talking_head_fantasy.json` | **FantasyTalking (RECOMMENDED)** - primary avatar |
+| `image_to_video_wan22.json` | Wan2.1 I2V GGUF (SLOWER - not recommended) |
 | `lipsync_wav2lip.json` | Wav2Lip alternative lip sync |
 
 ## Knowledge Base Structure
@@ -149,8 +165,23 @@ knowledge-base/
 ├── PROJECT-RECAP.md      # Architecture overview
 ├── research/             # Query history, conversation logs
 ├── decisions/            # Past architectural decisions
-└── patterns/             # Auto-detected reusable patterns
+├── patterns/             # Auto-detected reusable patterns
+└── training/             # Ingested training documents (YouTube, podcasts, PDFs)
 ```
+
+## Project Registry Structure
+
+```
+projects/
+└── registry.json         # Sprint tracking, teams, domains, certifications
+```
+
+The registry contains:
+- **domains** - Project areas (marketing, trading, ML, etc.)
+- **certifications** - 10-cert roadmap with priorities
+- **sprints** - Scrum-style sprint tracking
+- **teams** - Multi-agent team configurations
+- **agent_types** - Specialist agent definitions
 
 ## Budget Limits
 
@@ -241,8 +272,8 @@ Video production capabilities on The Machine (RTX 5060 Ti 16GB).
 
 | Feature | Model | VRAM | Status |
 |---------|-------|------|--------|
-| Image-to-Video | Wan2.1 I2V 480p | ~13GB | **WORKING** - tested 2026-01-26 |
-| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | **READY** - downloaded 12.7GB |
+| Image-to-Video | Wan2.1 I2V 480p fp8 | ~13GB | **RECOMMENDED** - ~42 min per clip |
+| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | **SLOWER** - ~70 min (not recommended) |
 | Talking Heads | FantasyTalking (Wan2.1) | ~14GB | **TESTED & APPROVED** 2026-02-02 |
 | Talking Heads (legacy) | SadTalker | ~6GB | Superseded by FantasyTalking |
 | Motion Loops | AnimateDiff | ~10GB | Nodes ready |
@@ -296,10 +327,12 @@ C:\ComfyUI\models\clip_vision\
   - CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
 ```
 
-**Performance:**
-- Wan2.1 fp8: 81 frames @ 30 steps = ~42 min on RTX 5060 Ti
-- Wan2.1 GGUF Q5: 81 frames @ 30 steps = ~7-15 min (estimated)
+**Performance (RTX 5060 Ti 16GB):**
+- Wan2.1 fp8: 81 frames @ 30 steps = **~42 min** (RECOMMENDED)
+- Wan2.1 GGUF Q5: 81 frames @ 30 steps = **~70 min** (slower, not recommended)
 - FantasyTalking: ~20-45 min per clip
+
+**GGUF Note:** Tested 2026-02-03. GGUF is slower on RTX 5060 Ti because it lacks specialized INT4/INT8 tensor cores. GGUF requires runtime dequantization which adds CPU overhead. Stick with fp8 for this hardware.
 
 ### Wan2.1 I2V Realism Tips
 
@@ -422,6 +455,273 @@ SUPABASE_URL          # Supabase project URL
 SUPABASE_KEY          # Supabase anon key
 ```
 
+## Multi-Agent Orchestration (TeammateTool)
+
+Claude Code v2.1.19+ includes native swarm orchestration via **TeammateTool**. This transforms Claude Code from a single assistant into a team orchestrator.
+
+### How It Works
+
+```
+You (Leader) → spawns → [specialist-1, specialist-2, specialist-3]
+                ↓
+          Agents work in parallel
+                ↓
+          Coordinate via task board + mailbox
+                ↓
+          Report back to leader
+```
+
+### Core Operations
+
+| Operation | Purpose |
+|-----------|---------|
+| `spawnTeam` | Create team, you become leader |
+| `write` | Send targeted message to specific teammate |
+| `broadcast` | Message all teammates (costly) |
+| `requestShutdown` | Graceful termination |
+| `cleanup` | Remove team resources |
+
+### Built-In Agent Types
+
+| Type | Tools | Use Case |
+|------|-------|----------|
+| **Bash** | Bash only | Command execution |
+| **Explore** | Glob, Grep, Read, WebFetch | Read-only codebase exploration (fast, haiku) |
+| **Plan** | All except Edit/Write | Architecture and planning |
+| **general-purpose** | All tools | Multi-step implementation tasks |
+
+### Spawn Backends
+
+| Backend | Visibility | Use Case |
+|---------|------------|----------|
+| `in-process` | None | Fastest, no UI |
+| **`tmux`** | Visible panes | Persistent, recommended |
+| `iterm2` | Split panes | macOS only |
+
+Set via: `CLAUDE_CODE_SPAWN_BACKEND=tmux`
+
+### Pre-Configured Teams
+
+View teams: `python automation_brain.py --teams`
+
+| Team | Members | Purpose |
+|------|---------|---------|
+| `video-production` | video-researcher, asset-generator, editor | Demo video creation |
+| `content-production` | researcher, writer, artist, editor | Marketing content |
+| `certification-study` | curriculum-builder, quiz-generator, progress-tracker | Cert prep |
+| `trading-analysis` | market-researcher, analyst, reporter | Market analysis |
+
+### Spawning a Team
+
+```bash
+# View team config
+python automation_brain.py --teams
+
+# Spawn a team (generates instructions)
+python automation_brain.py --team "spawn video-production"
+
+# In Claude Code, use Task tool to spawn agents:
+# subagent_type="Explore" for researchers
+# subagent_type="general-purpose" for workers
+```
+
+### TeammateTool vs Claude-Flow
+
+| Feature | TeammateTool (Native) | Claude-Flow V3 |
+|---------|----------------------|----------------|
+| Installation | Built-in | npm install |
+| Consensus | Majority (simple) | 4 algorithms (Raft, Byzantine, etc.) |
+| Learning | None | HNSW, LoRA, 9 RL algorithms |
+| Best for | Claude Code workflows | Complex orchestration, research |
+
+**Recommendation:** Start with native TeammateTool. Graduate to Claude-Flow if you need advanced consensus or learning systems.
+
+### Resources
+
+- [Claude Code Swarm Guide](https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea)
+- [Claude Flow V3 vs TeammateTool](https://gist.github.com/ruvnet/18dc8d060194017b989d1f8993919ee4)
+
+## Knowledge Ingestion Pipeline
+
+Transform podcasts, YouTube videos, and PDFs into training documents.
+
+### Pipeline Architecture
+
+```
+Source → Extraction → Chunking → Ollama Summary → Knowledge Base
+```
+
+### Supported Sources
+
+| Source | Tool | Cost |
+|--------|------|------|
+| YouTube | yt-dlp + faster-whisper | $0 (local) |
+| Podcast | faster-whisper | $0 (local) |
+| PDF | pdfplumber | $0 (local) |
+| Web | trafilatura | $0 (local) |
+
+### Commands
+
+```bash
+# YouTube video
+python knowledge_ingest.py --youtube "https://youtube.com/watch?v=..." -v
+
+# Podcast episode
+python knowledge_ingest.py --audio "podcast.mp3" --title "Episode Title"
+
+# PDF book/document
+python knowledge_ingest.py --pdf "book.pdf" --title "Book Title"
+
+# Web article
+python knowledge_ingest.py --web "https://example.com/article"
+
+# List all training docs
+python knowledge_ingest.py --list
+```
+
+### Output Format
+
+Training documents are saved to `knowledge-base/training/` with:
+- Key Takeaways (3-7 bullet points)
+- Detailed Summary (2-4 paragraphs)
+- Actionable Items (tasks extracted from content)
+- Full transcript/content (collapsible)
+
+### Dependencies
+
+```bash
+pip install yt-dlp faster-whisper pdfplumber trafilatura
+```
+
+### Recommended Podcasts for Training
+
+| Podcast | Focus | Priority |
+|---------|-------|----------|
+| **The AI-Powered Project Manager** | AI + PM automation | High |
+| **DrunkenPM Radio** | Agile + AI agents | High |
+| **Scrum Master Toolbox** | Daily Scrum tips | Medium |
+| **Agile Mentors** (Mountain Goat) | Scrum fundamentals | Medium |
+
+## Sprint Management
+
+Scrum-style project management integrated with automation_brain.py.
+
+### Commands
+
+```bash
+# View current sprint
+python automation_brain.py --sprint
+
+# Generate standup report
+python automation_brain.py --standup
+
+# View all teams
+python automation_brain.py --teams
+```
+
+### Sprint Structure (in registry.json)
+
+```json
+{
+  "id": "2026-W06",
+  "name": "Fiverr Launch Sprint",
+  "start": "2026-02-03",
+  "end": "2026-02-09",
+  "status": "active",
+  "goals": ["Complete 3 demo videos", "Publish gigs"],
+  "tasks": [
+    {"id": "video-1", "name": "Marketing Demo", "status": "in_progress"},
+    {"id": "video-2", "name": "Image Gen Demo", "status": "pending"}
+  ]
+}
+```
+
+### Task Statuses
+
+| Status | Icon | Meaning |
+|--------|------|---------|
+| `completed` | ✓ | Done |
+| `in_progress` | → | Being worked on |
+| `pending` | ○ | Ready to start |
+| `blocked` | ✗ | Waiting on dependency |
+
+## SSH Persistence
+
+Configured in `~/.ssh/config` for persistent connections.
+
+```
+Host the-machine
+    HostName 100.64.130.71
+    User michael
+    ServerAliveInterval 30
+    ServerAliveCountMax 10
+```
+
+### tmux for Long Tasks
+
+```bash
+# Start session (on The Machine)
+tmux new -s claude
+
+# Detach: Ctrl+B, D
+
+# Reconnect later
+tmux attach -t claude
+
+# List sessions
+tmux ls
+```
+
+## Long-Running ComfyUI Jobs
+
+Video generation can take 1+ hours. Use `comfyui_job.py` for fire-and-forget job management.
+
+### Commands
+
+```bash
+# Queue job (returns immediately with prompt_id)
+python comfyui_job.py queue --workflow image_to_video_wan22 --image candle.png
+
+# Check status anytime
+python comfyui_job.py status <prompt_id>
+
+# Wait for completion (RUN IN TMUX!)
+python comfyui_job.py wait <prompt_id> --timeout 7200
+
+# List recent jobs
+python comfyui_job.py list
+
+# Test GGUF speed (RUN IN TMUX!)
+python comfyui_job.py test --image test.png
+```
+
+### Proper Workflow for Long Jobs
+
+```bash
+# 1. SSH to The Machine
+ssh the-machine
+
+# 2. Start tmux session
+tmux new -s video-gen
+
+# 3. Run the job
+python C:/automation-machine/comfyui_job.py test
+
+# 4. Detach from tmux (Ctrl+B, D)
+# Session keeps running even if SSH drops!
+
+# 5. Reconnect anytime to check progress
+ssh the-machine
+tmux attach -t video-gen
+```
+
+### Job Tracking
+
+Jobs are logged to `comfyui_jobs.json` with:
+- prompt_id, workflow, status
+- queued_at, completed_at
+- elapsed_seconds
+
 ## Fiverr Service Expansion Ideas
 
 Based on Claude ecosystem mastery:
@@ -433,3 +733,4 @@ Based on Claude ecosystem mastery:
 | Browser Automation Setup | Claude in Chrome | $200 - $800 |
 | Custom MCP Development | MCP + Claude API | $500 - $2,000 |
 | AI Workflow Consulting | Full ecosystem | $100 - $300/hr |
+| Multi-Agent Orchestration | TeammateTool + Claude Code | $1,000 - $5,000 |

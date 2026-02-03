@@ -24,6 +24,7 @@ TOOLS_CONFIG_PATH = BASE_DIR / "tools_config.json"
 USAGE_LOG_PATH = BASE_DIR / "usage_log.json"
 KNOWLEDGE_BASE_PATH = BASE_DIR / "knowledge-base"
 CONVERSATION_LOG_PATH = KNOWLEDGE_BASE_PATH / "research" / "conversation-log.md"
+PROJECTS_REGISTRY_PATH = BASE_DIR / "projects" / "registry.json"
 
 # Task categories for routing
 TaskCategory = Literal["research", "code", "reasoning", "image", "video", "database", "general"]
@@ -1319,6 +1320,188 @@ Be specific about selectors and actions."""
 
         print("\n" + "=" * 60)
 
+    # =========================================================================
+    # SPRINT & PROJECT MANAGEMENT
+    # =========================================================================
+
+    def _load_registry(self) -> dict:
+        """Load project registry from JSON."""
+        if PROJECTS_REGISTRY_PATH.exists():
+            with open(PROJECTS_REGISTRY_PATH, "r") as f:
+                return json.load(f)
+        return {}
+
+    def _save_registry(self, registry: dict) -> None:
+        """Save project registry to JSON."""
+        with open(PROJECTS_REGISTRY_PATH, "w") as f:
+            json.dump(registry, f, indent=2)
+
+    def show_sprint(self) -> None:
+        """Display current sprint information."""
+        registry = self._load_registry()
+        sprints = registry.get("sprints", [])
+
+        # Find active sprint
+        active_sprint = None
+        for sprint in sprints:
+            if sprint.get("status") == "active":
+                active_sprint = sprint
+                break
+
+        if not active_sprint:
+            print("\n[No active sprint found]")
+            print("Create a sprint in projects/registry.json")
+            return
+
+        print("\n" + "=" * 60)
+        print(f"SPRINT: {active_sprint['name']} ({active_sprint['id']})")
+        print("=" * 60)
+        print(f"\nPeriod: {active_sprint['start']} to {active_sprint['end']}")
+
+        print("\n--- Goals ---")
+        for goal in active_sprint.get("goals", []):
+            print(f"  • {goal}")
+
+        print("\n--- Tasks ---")
+        tasks = active_sprint.get("tasks", [])
+        status_icons = {"completed": "[x]", "in_progress": "[>]", "pending": "[ ]", "blocked": "[!]"}
+
+        for task in tasks:
+            icon = status_icons.get(task.get("status", "pending"), "?")
+            assignee = f" [{task['assignee']}]" if task.get("assignee") else ""
+            blocked = " (BLOCKED)" if task.get("blocked_by") else ""
+            print(f"  {icon} {task['name']}{assignee}{blocked}")
+
+        # Progress
+        completed = sum(1 for t in tasks if t.get("status") == "completed")
+        in_progress = sum(1 for t in tasks if t.get("status") == "in_progress")
+        print(f"\nProgress: {completed}/{len(tasks)} completed, {in_progress} in progress")
+
+        print("\n" + "=" * 60)
+
+    def show_standup(self) -> None:
+        """Generate a standup report."""
+        registry = self._load_registry()
+        sprints = registry.get("sprints", [])
+
+        # Find active sprint
+        active_sprint = None
+        for sprint in sprints:
+            if sprint.get("status") == "active":
+                active_sprint = sprint
+                break
+
+        if not active_sprint:
+            print("\n[No active sprint for standup]")
+            return
+
+        print("\n" + "=" * 60)
+        print(f"STANDUP REPORT - {datetime.now().strftime('%Y-%m-%d')}")
+        print("=" * 60)
+
+        tasks = active_sprint.get("tasks", [])
+
+        # What was completed
+        completed = [t for t in tasks if t.get("status") == "completed"]
+        if completed:
+            print("\n[x] COMPLETED:")
+            for t in completed:
+                print(f"  - {t['name']}")
+
+        # What's in progress
+        in_progress = [t for t in tasks if t.get("status") == "in_progress"]
+        if in_progress:
+            print("\n[>] IN PROGRESS:")
+            for t in in_progress:
+                print(f"  - {t['name']}")
+
+        # What's blocked
+        blocked = [t for t in tasks if t.get("blocked_by")]
+        if blocked:
+            print("\n[!] BLOCKED:")
+            for t in blocked:
+                blockers = ", ".join(t.get("blocked_by", []))
+                print(f"  - {t['name']} (waiting on: {blockers})")
+
+        # What's next
+        pending = [t for t in tasks if t.get("status") == "pending" and not t.get("blocked_by")]
+        if pending:
+            print("\n[ ] UP NEXT:")
+            for t in pending[:3]:  # Show top 3
+                print(f"  - {t['name']}")
+
+        print("\n" + "=" * 60)
+
+    def show_teams(self) -> None:
+        """Display team configurations."""
+        registry = self._load_registry()
+        teams = registry.get("teams", {})
+
+        print("\n" + "=" * 60)
+        print("AUTOMATION MACHINE - AGENT TEAMS")
+        print("=" * 60)
+
+        for team_name, team_config in teams.items():
+            status = "ACTIVE" if team_config.get("active") else "INACTIVE"
+            print(f"\n--- {team_name} [{status}] ---")
+            print(f"  Leader: {team_config.get('leader', 'unassigned')}")
+            print(f"  Members: {', '.join(team_config.get('members', []))}")
+            print(f"  Purpose: {team_config.get('description', 'N/A')}")
+
+        print("\n" + "=" * 60)
+
+    def spawn_team(self, team_name: str) -> None:
+        """
+        Spawn a team of agents using Claude Code's native TeammateTool.
+        Note: This generates instructions - actual spawning happens in Claude Code.
+        """
+        registry = self._load_registry()
+        teams = registry.get("teams", {})
+        agent_types = registry.get("agent_types", {})
+
+        if team_name not in teams:
+            print(f"ERROR: Team '{team_name}' not found.")
+            print(f"Available teams: {', '.join(teams.keys())}")
+            return
+
+        team = teams[team_name]
+        members = team.get("members", [])
+
+        print("\n" + "=" * 60)
+        print(f"SPAWNING TEAM: {team_name}")
+        print("=" * 60)
+
+        print(f"\nDescription: {team.get('description', 'N/A')}")
+        print(f"Leader: {team.get('leader', 'main-claude')}")
+
+        print("\n--- Agent Spawn Instructions ---")
+        print("Use these in Claude Code to spawn the team:\n")
+
+        for member in members:
+            agent_config = agent_types.get(member, {})
+            base_type = agent_config.get("base", "general-purpose")
+            focus = agent_config.get("focus", "General tasks")
+
+            print(f"Agent: {member}")
+            print(f"  Type: {base_type}")
+            print(f"  Focus: {focus}")
+            print(f"  Spawn command (in Claude Code):")
+            print(f'    Task tool with subagent_type="{base_type}"')
+            print(f'    prompt="You are {member}. Focus: {focus}"')
+            print()
+
+        print("--- TeammateTool Pattern ---")
+        print("1. You (leader) delegate tasks to agents")
+        print("2. Agents work in parallel on their tasks")
+        print("3. Agents report back via task board")
+        print("4. Coordinate via mailbox (~/.claude/teams/)")
+        print("\n" + "=" * 60)
+
+        # Update team status to active
+        teams[team_name]["active"] = True
+        registry["teams"] = teams
+        self._save_registry(registry)
+
 
 # =============================================================================
 # CLI
@@ -1339,6 +1522,16 @@ def main():
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Show routing decisions")
 
+    # Sprint management flags
+    parser.add_argument("--sprint", action="store_true",
+                        help="Show current sprint status")
+    parser.add_argument("--standup", action="store_true",
+                        help="Generate standup report")
+    parser.add_argument("--teams", action="store_true",
+                        help="Show agent team configurations")
+    parser.add_argument("--team", metavar="ACTION",
+                        help="Team operations: spawn <team-name>")
+
     args = parser.parse_args()
 
     brain = AutomationBrain(verbose=args.verbose)
@@ -1349,6 +1542,28 @@ def main():
 
     if args.tools:
         brain.show_tools()
+        return
+
+    if args.sprint:
+        brain.show_sprint()
+        return
+
+    if args.standup:
+        brain.show_standup()
+        return
+
+    if args.teams:
+        brain.show_teams()
+        return
+
+    if args.team:
+        # Parse team action: "spawn team-name"
+        parts = args.team.split(maxsplit=1)
+        if len(parts) == 2 and parts[0] == "spawn":
+            brain.spawn_team(parts[1])
+        else:
+            print("Usage: --team 'spawn <team-name>'")
+            print("Example: --team 'spawn video-production'")
         return
 
     if not args.query:

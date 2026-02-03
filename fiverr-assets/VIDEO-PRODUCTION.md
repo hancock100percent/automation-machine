@@ -2,7 +2,7 @@
 
 ## Status: IN PROGRESS
 
-Last Updated: 2026-02-02
+Last Updated: 2026-02-03
 
 ---
 
@@ -56,19 +56,22 @@ Building a complete, scalable video production pipeline using existing tools:
 | Capability | Model/Workflow | VRAM | Use Case | Status |
 |------------|----------------|------|----------|--------|
 | **Talking Head** | **FantasyTalking (Wan2.1)** | ~14GB | **AI avatar from photo + audio** | **APPROVED** |
-| Image-to-Video | Wan2.1 I2V 480p fp8 | ~13GB | Animate product images | WORKING |
-| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | Faster I2V generation | READY |
+| **Image-to-Video** | **Wan2.1 I2V 480p fp8** | ~13GB | **Animate product images** | **RECOMMENDED (~42 min)** |
+| Image-to-Video GGUF | Wan2.1 I2V Q5_K_M | ~14GB | Slower on this GPU | **NOT RECOMMENDED (~70 min)** |
 | Image-to-Video | AnimateDiff | ~10GB | Motion graphics, loops | Available |
-| Talking Head (legacy) | FantasyTalking | ~6GB | Superseded by FantasyTalking | Deprecated |
+| Talking Head (legacy) | SadTalker | ~6GB | Superseded by FantasyTalking | Deprecated |
 | Lip Sync | Wav2Lip | ~4GB | Sync any face to audio | Available |
 | Video Upscale | Real-ESRGAN | ~4GB | Enhance low-res clips | Available |
 | Frame Interpolation | RIFE | ~2GB | Smooth motion | Available |
+
+**GGUF Test Results (2026-02-03):** GGUF quantized models are **slower** on RTX 5060 Ti (~70 min vs ~42 min for fp8). This is because the GPU lacks specialized INT4/INT8 tensor cores and GGUF requires runtime dequantization. **Use fp8 for all video generation.**
 
 ### Workflows Created
 
 | Workflow | File | Purpose |
 |----------|------|---------|
-| Image-to-Video (Wan2.1) | `workflows/image_to_video.json` | Main I2V workflow |
+| **Image-to-Video (Wan2.1 fp8)** | `workflows/image_to_video.json` | **RECOMMENDED - ~42 min** |
+| Image-to-Video (GGUF) | `workflows/image_to_video_wan22.json` | Not recommended (~70 min) |
 | Image-to-Video (AnimateDiff) | `workflows/image_to_video_animatediff.json` | Loop animations |
 | **Talking Head (FantasyTalking)** | `workflows/talking_head_fantasy.json` | **Primary avatar videos** |
 | Talking Head (SadTalker) | `workflows/talking_head.json` | Legacy (deprecated) |
