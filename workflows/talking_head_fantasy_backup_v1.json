@@ -36,7 +36,7 @@
   "39": {
     "class_type": "WanVideoBlockSwap",
     "inputs": {
-      "blocks_to_swap": 20,
+      "blocks_to_swap": 15,
       "offload_img_emb": true,
       "offload_txt_emb": false,
       "vace_blocks_to_swap": 0
@@ -120,9 +120,9 @@
         0
       ],
       "num_frames": 81,
-      "fps": 23.0,
+      "fps": 24.0,
       "audio_scale": 1.0,
-      "audio_cfg_scale": 5.0
+      "audio_cfg_scale": 1.0
     }
   },
   "74": {
@@ -176,8 +176,8 @@
         "22",
         0
       ],
-      "positive_prompt": "A person is speaking directly to camera, precise lip movements matching speech, natural head movements, subtle expressions, professional lighting, talking naturally, mouth clearly articulating words",
-      "negative_prompt": "distortion, warped face, glitching, unnatural movement, blurry, low quality, frozen lips, mouth not moving, teeth distortion, static mouth, closed mouth while speaking",
+      "positive_prompt": "A person is speaking directly to camera, natural head movements, subtle expressions, professional lighting, talking naturally",
+      "negative_prompt": "distortion, warped face, glitching, unnatural movement, blurry, low quality",
       "force_offload": true
     }
   },
@@ -253,14 +253,14 @@
         "72",
         0
       ],
-      "frame_rate": 23,
+      "frame_rate": 24,
       "loop_count": 0,
       "filename_prefix": "FantasyTalking",
       "format": "video/h264-mp4",
       "pix_fmt": "yuv420p",
       "crf": 19,
       "save_metadata": true,
-      "trim_to_audio": true,
+      "trim_to_audio": false,
       "pingpong": false,
       "save_output": true
     }

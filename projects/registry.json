@@ -146,10 +146,38 @@
         "priority": 2
       },
       {
-        "name": "AWS Solutions Architect",
+        "name": "AWS Solutions Architect Associate",
+        "code": "SAA-C03",
         "domain": "machine-learning",
-        "status": "planned",
-        "priority": 3
+        "status": "studying",
+        "priority": 1,
+        "exam_cost_usd": 150,
+        "passing_score": "720/1000",
+        "questions": 65,
+        "duration_minutes": 130,
+        "domains": [
+          {"name": "Design Secure Architectures", "weight": 30},
+          {"name": "Design Resilient Architectures", "weight": 26},
+          {"name": "Design High-Performing Architectures", "weight": 24},
+          {"name": "Design Cost-Optimized Architectures", "weight": 20}
+        ],
+        "study_plan": {
+          "total_weeks": 4,
+          "hours_per_day": 1.5,
+          "days_per_week": 6,
+          "total_hours_estimated": 60,
+          "start_date": "2026-02-10",
+          "target_exam_date": "2026-03-10"
+        },
+        "free_resources": [
+          {"name": "freeCodeCamp SAA-C03 Full Course (YouTube)", "type": "video", "hours": 50},
+          {"name": "AWS Skill Builder Exam Prep", "type": "course", "hours": 10},
+          {"name": "ExamTopics Practice Questions", "type": "practice_exam", "questions": 1000},
+          {"name": "CertificationPractice.com", "type": "practice_exam", "questions": 390},
+          {"name": "Tutorials Dojo Free Sampler", "type": "practice_exam", "questions": 30},
+          {"name": "GitHub 650+ Q&A Bank", "type": "practice_exam", "questions": 650},
+          {"name": "AWS Free Tier (Hands-on Labs)", "type": "lab"}
+        ]
       },
       {
         "name": "CompTIA Security+",
@@ -322,7 +350,7 @@
         "progress-tracker"
       ],
       "description": "Manages certification study and progress",
-      "active": false
+      "active": true
     },
     "trading-analysis": {
       "leader": "main-claude",
@@ -332,7 +360,7 @@
         "reporter"
       ],
       "description": "Performs market research and trading analysis",
-      "active": false
+      "active": true
     }
   },
   "agent_types": {

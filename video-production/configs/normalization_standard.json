@@ -52,10 +52,10 @@
       "note": "May be image sequence or video"
     },
     "fantasytalking": {
-      "typical_resolution": "832x480",
-      "typical_fps": 24,
+      "typical_resolution": "512x512",
+      "typical_fps": 23,
       "has_audio": true,
-      "note": "Full diffusion talking head. Higher quality than SadTalker. Will be upscaled + pillarboxed to 1080p."
+      "note": "Full diffusion talking head. Higher quality than SadTalker. Native 23fps (model training rate). Will be upscaled + pillarboxed to 1080p."
     },
     "wan22_i2v": {
       "typical_resolution": "1024x576",

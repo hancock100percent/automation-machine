@@ -607,6 +607,45 @@ video-production/
 
 ---
 
+## Resume Support (Added 2026-02-05)
+
+The generation script supports **automatic resume** after interruptions (Claude Code timeouts, SSH drops, etc.).
+
+### How It Works
+
+- **State file:** `video-production/state/generation_progress.json` tracks all job/segment progress
+- **File-based detection:** Existing output clips on disk are detected and skipped automatically
+- **Predictable naming:** Segment clips are renamed to `{job_name}_seg{NN}.mp4` for reliable resume matching
+- **Per-segment saves:** State is saved after each segment completes, so no progress is lost
+
+### Resume Commands
+
+```bash
+# Check current progress
+python video-production/scripts/generate_comfyui_assets.py --resume-status
+
+# Resume where you left off (auto-skips completed jobs/segments)
+python video-production/scripts/generate_comfyui_assets.py --fantasy
+
+# Check ComfyUI status + resume progress together
+python video-production/scripts/generate_comfyui_assets.py --status
+```
+
+### Avoiding Timeouts
+
+FantasyTalking jobs take **20-45 min per segment**. Multi-segment jobs (5 segments) can take **2-3 hours**.
+
+**Best practice:** Run the script directly in PowerShell, not through Claude Code:
+```powershell
+# Open PowerShell (not Claude Code) and run:
+python C:\automation-machine\video-production\scripts\generate_comfyui_assets.py --fantasy
+
+# This survives Claude Code session timeouts
+# If interrupted for any reason, just re-run -- it picks up where it left off
+```
+
+---
+
 ## Automated Pipeline Reference
 
 ### How to Run the Pipeline

@@ -1,0 +1,60 @@
+{
+  "last_run": "2026-02-05T05:05:51.161405",
+  "jobs": {
+    "v1_intro_avatar": {
+      "status": "completed",
+      "job_type": "fantasytalking",
+      "segments_total": 5,
+      "segments_completed": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stitched": true,
+      "output_path": "demo-clients\\candle-co\\video-assets\\fantasytalking\\v1_intro_avatar.mp4",
+      "last_updated": "2026-02-05T05:05:51.161917"
+    },
+    "v1_outro_avatar": {
+      "status": "completed",
+      "job_type": "fantasytalking",
+      "segments_total": 5,
+      "segments_completed": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stitched": true,
+      "output_path": "demo-clients\\candle-co\\video-assets\\fantasytalking\\v1_outro_avatar.mp4",
+      "last_updated": "2026-02-05T05:05:51.162939"
+    },
+    "v2_cta_avatar": {
+      "status": "completed",
+      "job_type": "fantasytalking",
+      "segments_total": 3,
+      "segments_completed": [
+        0,
+        1,
+        2
+      ],
+      "stitched": true,
+      "output_path": "demo-clients\\candle-co\\video-assets\\fantasytalking\\v2_cta_avatar.mp4",
+      "last_updated": "2026-02-05T06:38:25.186043"
+    },
+    "v3_intro_avatar": {
+      "status": "completed",
+      "job_type": "fantasytalking",
+      "segments_total": 2,
+      "segments_completed": [
+        0,
+        1
+      ],
+      "stitched": true,
+      "output_path": "demo-clients\\candle-co\\video-assets\\fantasytalking\\v3_intro_avatar.mp4",
+      "last_updated": "2026-02-05T07:26:26.973263"
+    }
+  }
+}

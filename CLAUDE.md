@@ -15,9 +15,10 @@ Local-first AI orchestration system for cost-optimized query routing across mult
 ## Architecture
 
 ```
-Gaming PC (localhost)     → Ollama server + automation_brain.py (primary dev)
+Gaming PC (localhost)       → Ollama server + automation_brain.py (primary dev)
 The Machine (100.64.130.71) → ComfyUI + RTX 5060 Ti 16GB (image generation)
-Laptop                    → Mobile access via Tailscale
+S22 Ultra (100.115.120.118) → Mobile access via Termux + Tailscale SSH
+Laptop                      → Mobile access via Tailscale
 ```
 
 ### Routing Logic
@@ -123,6 +124,31 @@ python auto_doc.py --eod "summary"              # End of day update
 | `HANDOFF.md` | Cross-LLM handoff protocol |
 | `fiverr-assets/VIDEO-PRODUCTION.md` | Video production tracker |
 | `demo-clients/candle-co/video-scripts.md` | Demo video scripts |
+| `video-production/state/generation_progress.json` | **CHECK FIRST** - Resume state for video generation |
+| `agents/BULLETIN.md` | Multi-agent shared status board |
+| `agents/agent-runner.ps1` | Ralph Wiggum autonomous loop launcher |
+| `agents/cost-guardian.py` | Budget watchdog (zero token cost) |
+| `agents/*/PROMPT.md` | Per-agent instructions |
+| `agents/*/state.json` | Per-agent progress state (resume-capable) |
+
+## Resuming Video Generation
+
+**When starting a new session**, check video progress first:
+```bash
+python video-production/scripts/generate_comfyui_assets.py --resume-status
+```
+
+The script auto-resumes: completed jobs/segments are skipped. Just re-run to continue:
+```bash
+# Resume all remaining FantasyTalking + I2V jobs
+python video-production/scripts/generate_comfyui_assets.py
+
+# Or run in a standalone terminal (survives Claude Code timeouts):
+# Open PowerShell and run directly -- no Claude Code session needed
+python video-production/scripts/generate_comfyui_assets.py --fantasy
+```
+
+**TIP:** For long generation runs (2+ hours), run the script directly in PowerShell instead of through Claude Code to avoid session timeouts.
 
 ## Code Conventions
 
@@ -197,12 +223,19 @@ The registry contains:
 - MCP server integrations
 - Hooks for automation triggers
 
-### Claude in Chrome (Browser Extension)
+### Claude in Chrome (Browser Extension) - INSTALLED
 - Browser automation and navigation
 - Form filling, multi-tab workflows
 - Record & replay workflows
 - Built-in: Gmail, Calendar, Docs, Slack, GitHub
-- Install: https://claude.com/chrome
+
+### Claude Desktop App - INSTALLED
+- Native desktop AI assistant on Gaming PC
+
+### Perplexity Comet Browser - INSTALLED
+- AI-native browser with agentic browsing (free with Perplexity subscription)
+- Multi-tab intelligence, form filling, web automation
+- Use for: competitor research, data extraction, automated browsing workflows
 
 ### MCP Servers (Tool Integrations)
 - Connect Claude to external services
@@ -645,6 +678,56 @@ python automation_brain.py --teams
 | `pending` | ○ | Ready to start |
 | `blocked` | ✗ | Waiting on dependency |
 
+## Mobile Access (S22 Ultra)
+
+Claude Code from phone via Termux + Tailscale SSH. Setup completed 2026-02-07.
+
+### Device Info
+
+| Field | Value |
+|-------|-------|
+| Device | Samsung Galaxy S22 Ultra |
+| Tailscale hostname | `michaels-s22-ultra` |
+| Tailscale IP | `100.115.120.118` |
+| Apps | Termux (F-Droid), Tailscale |
+
+### Connect from Phone
+
+```bash
+# In Termux
+ssh michael@100.64.130.71
+
+# Then run Claude Code
+claude
+```
+
+### Termux SSH Config (optional, for shortcut)
+
+Create `~/.ssh/config` in Termux:
+```
+Host pc
+    HostName 100.64.130.71
+    User michael
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+```
+
+Then just: `ssh pc`
+
+### SSH Key Auth (recommended)
+
+```bash
+# In Termux (one-time setup)
+ssh-keygen -t ed25519
+ssh-copy-id michael@100.64.130.71
+```
+
+### Tips
+
+- All execution happens on the Gaming PC -- phone is just a terminal
+- Close Termux anytime; nothing is lost on the PC side
+- For long sessions, consider Mosh (`pkg install mosh`) for better network resilience
+
 ## SSH Persistence
 
 Configured in `~/.ssh/config` for persistent connections.
@@ -721,6 +804,81 @@ Jobs are logged to `comfyui_jobs.json` with:
 - prompt_id, workflow, status
 - queued_at, completed_at
 - elapsed_seconds
+
+## Multi-Agent Orchestration (File-Based)
+
+Persistent, autonomous agent system using file-based coordination + Ralph Wiggum loops.
+
+### Architecture
+
+```
+agents/
+├── BULLETIN.md              # Shared status board (all agents read/write)
+├── agent-runner.ps1         # Ralph Wiggum loop launcher (PowerShell)
+├── cost-guardian.py         # Budget watchdog (plain Python, zero token cost)
+├── fiverr/                  # Agent 1: Fiverr gig launch
+│   ├── PROMPT.md            # Agent instructions
+│   ├── state.json           # Progress state (resume-capable)
+│   └── HEARTBEAT.md         # Last-alive timestamp
+├── dashboard/               # Agent 2: Streamlit dashboard
+├── trading/                 # Agent 3: Algorithmic trading research
+├── aws-cert/                # Agent 4: AWS certification study
+└── _template/               # Template for adding new agents
+```
+
+### Quick Commands
+
+```powershell
+# Run one agent interactively (testing)
+.\agents\agent-runner.ps1 -AgentName trading -MaxIterations 1
+
+# Run agent autonomously
+.\agents\agent-runner.ps1 -AgentName fiverr
+
+# Dry run (see prompt without executing)
+.\agents\agent-runner.ps1 -AgentName dashboard -DryRun
+
+# Budget check
+python agents/cost-guardian.py --check
+
+# Continuous budget monitoring
+python agents/cost-guardian.py --watch
+
+# Clear budget pause signal
+python agents/cost-guardian.py --reset-signal
+```
+
+### File Ownership Rules
+
+| Agent | Exclusive Write | Shared (lock required) |
+|-------|----------------|----------------------|
+| fiverr | `fiverr-assets/`, `demo-clients/`, `video-production/`, `workflows/` | `registry.json`, `BULLETIN.md` |
+| dashboard | `dashboard/` | `BULLETIN.md` |
+| trading | `trading/` | `BULLETIN.md` |
+| aws-cert | `knowledge-base/training/aws/` | `registry.json`, `BULLETIN.md` |
+
+### BULLETIN.md Protocol
+
+- All agents read BULLETIN.md at startup
+- Append-only updates for status changes
+- File locks: check -> add lock -> write -> remove lock
+- Stale locks (>30 min) can be broken
+- Cost guardian writes PAUSE/STOP signals here
+
+### Adding a New Agent
+
+1. Copy `agents/_template/` to `agents/<new-name>/`
+2. Edit PROMPT.md with role, owned dirs, and task list
+3. Edit state.json with task definitions
+4. Add agent row to BULLETIN.md
+5. Run: `.\agents\agent-runner.ps1 -AgentName <new-name> -MaxIterations 1`
+
+### Scaling Path
+
+- **4 agents**: Single worktree, shared BULLETIN.md, file locks (current)
+- **10 agents**: Git worktrees per agent, partitioned bulletins
+- **25 agents**: Per-agent bulletin files + aggregator script
+- **50 agents**: SQLite/Supabase for state, consider Claude Flow V3
 
 ## Fiverr Service Expansion Ideas
 

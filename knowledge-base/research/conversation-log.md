@@ -1178,3 +1178,16 @@ The search results confirm **LTX 2** and **WAN 2.6** are actively supported in C
 
 - WAN 2.1 I2V, WAN 2.2, CogVideoX, or HunyuanVide...
 
+
+---
+## [2026-02-03 17:03:43] via github (gh-cli)
+
+**Query:** generate image of professional male presenter headshot, front-facing, neutral friendly expression, well-lit studio lighting, clean background, business casual, high quality portrait photo, realistic, 35 years old, confident
+
+**Response:**
+**GitHub Error**
+
+Ollama connection failed: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError("HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+_Ensure gh CLI is installed._
+

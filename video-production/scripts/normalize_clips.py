@@ -24,6 +24,7 @@ PROBE_REPORT_DIR = os.path.join(REPO_ROOT, "video-production", "logs", "ffprobe_
 RAW_CLIP_DIRS = [
     os.path.join(REPO_ROOT, "demo-clients", "candle-co", "video-assets", "i2v"),
     os.path.join(REPO_ROOT, "demo-clients", "candle-co", "video-assets", "sadtalker"),
+    os.path.join(REPO_ROOT, "demo-clients", "candle-co", "video-assets", "fantasytalking"),
     os.path.join(REPO_ROOT, "demo-clients", "candle-co", "screen-recordings"),
     os.path.join(REPO_ROOT, "demo-clients", "candle-co", "canva-exports"),
 ]

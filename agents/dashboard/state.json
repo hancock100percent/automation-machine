@@ -1,0 +1,72 @@
+{
+  "agent": "dashboard",
+  "created": "2026-02-07",
+  "iteration": 6,
+  "status": "active",
+  "exit_signal": false,
+  "exit_reason": null,
+  "exit_message": null,
+  "session_cost_usd": 0.90,
+  "tasks": [
+    {
+      "id": "dash-1",
+      "name": "Add Agent Status section",
+      "status": "completed",
+      "priority": 1,
+      "notes": "Enhanced existing Section 5: fixed task counting bug (was double-counting from tasks[] + completed_tasks[]), added expandable per-agent task detail with status badges and notes, added 'active' status color, added BULLETIN recent completions expander, moved import re to top of file, added error handling around heartbeat reads."
+    },
+    {
+      "id": "dash-2",
+      "name": "Add trading track section",
+      "status": "completed",
+      "priority": 2,
+      "notes": "Added Section 5 (Trading Research) between Video Pipeline and Agent Orchestration. Shows: agent task progress bar, latest agent notes, backtest result cards (return%, drawdown, trades, final value), returns comparison bar chart (Plotly), expandable trade log with color-coded BUY/SELL, expandable research task detail, and watchlist extracted from config.py. All data from trading/results/*.json and agents/trading/state.json."
+    },
+    {
+      "id": "dash-3",
+      "name": "Add AWS cert progress section",
+      "status": "completed",
+      "priority": 3,
+      "notes": "Added Section 6 (AWS Certification Progress) between Trading Research and Agent Orchestration. Shows: CLF-C02 exam info cards (65 Qs, 700/1000 pass, $100), 4 domain study progress cards with weights and notes/practice-Q completion status, overall study notes progress bar, practice questions status, study files inventory, study agent task progress bar with expandable task detail."
+    },
+    {
+      "id": "dash-4",
+      "name": "Improve cost charts",
+      "status": "completed",
+      "priority": 4,
+      "notes": "Expanded Cost Tracker from 2 charts to 6 visualizations in 3 rows: (1) Daily spend bar chart with daily budget threshold line + cumulative spend trend line with monthly budget line, (2) Queries by tool pie chart + cost by tool bar chart sorted descending, (3) Agent session costs bar chart with per-agent colors and total + budget forecast panel with avg daily spend, projected month-end, budget % used, and visual forecast progress bar."
+    },
+    {
+      "id": "dash-5",
+      "name": "Add system health indicators",
+      "status": "completed",
+      "priority": 5,
+      "notes": "Added Section 0 (System Health) at top of dashboard. Shows: ComfyUI status with GPU name + VRAM usage bar + OS/Python info from /system_stats, Ollama status with model count + names from /api/tags, disk space for C: drive with color-coded status (green/orange/red) + usage bar. All checks cached 60s via st.cache_data with 2s timeout to avoid blocking page loads."
+    },
+    {
+      "id": "dash-6",
+      "name": "Mobile-friendly layout",
+      "status": "completed",
+      "priority": 6,
+      "notes": "Injected responsive CSS via st.markdown with media queries. Mobile (<768px): all st.columns stack vertically (flex-wrap + 100% width), reduced block-container padding, larger expander tap targets, charts prevent overflow with max-width + overflow-x. Tablet (769-1024px): columns wrap to 2-per-row (48% width). Sidebar auto-collapses (native Streamlit behavior)."
+    },
+    {
+      "id": "dash-7",
+      "name": "Auto-refresh",
+      "status": "pending",
+      "priority": 7,
+      "notes": null
+    }
+  ],
+  "completed_tasks": ["dash-1", "dash-2", "dash-3", "dash-4", "dash-5", "dash-6"],
+  "current_task": null,
+  "notes": [
+    "Iteration 1: Enhanced Agent Orchestration section (dash-1). Fixed task counting bug that double-counted completed tasks. Added expandable task detail per agent showing individual task statuses/notes, BULLETIN recent completions, and 'active' status support.",
+    "Iteration 2: Added Trading Research section (dash-2). Reads backtest results from trading/results/*.json, shows return/drawdown/trade cards, Plotly comparison chart, trade log, and research task progress from trading agent state.",
+    "Iteration 3: Added AWS Certification Progress section (dash-3). Reads aws-cert agent state + study files from knowledge-base/training/aws/clf-c02/. Shows exam info, 4-domain study progress with weights, practice Q status, study agent task detail.",
+    "Iteration 4: Improved cost charts (dash-4). Expanded from 2 to 6 visualizations: daily spend + cumulative trend (row 1), queries pie + cost-by-tool bar (row 2), agent session costs + budget forecast (row 3). Added budget threshold lines, month-end projection, and avg daily spend metrics.",
+    "Iteration 5: Added system health indicators (dash-5). New Section 0 at dashboard top: ComfyUI status (GPU/VRAM from /system_stats), Ollama status (models from /api/tags), disk space (C: drive usage). Cached 60s with 2s timeout. Color-coded status badges.",
+    "Iteration 6: Added mobile-friendly layout (dash-6). Responsive CSS media queries: mobile stacks all columns vertically, tablet wraps to 2-per-row, reduced padding, larger tap targets for expanders, chart overflow protection."
+  ],
+  "last_updated": "2026-02-07T17:00:00Z"
+}
