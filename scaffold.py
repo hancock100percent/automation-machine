@@ -251,9 +251,17 @@ def scaffold_project(inputs: dict, dry_run: bool = False) -> Path:
 
     # Safety checks
     if target.exists():
-        print(f"\n  ERROR: Directory already exists: {target}")
-        print("  Remove it first or choose a different name.")
-        sys.exit(1)
+        # Allow scaffolding into an existing directory if it has no real files
+        existing = [p for p in target.rglob("*") if p.is_file()]
+        if existing:
+            print(f"\n  ERROR: Directory already exists and contains files: {target}")
+            for p in existing[:10]:
+                print(f"    {p.relative_to(target)}")
+            if len(existing) > 10:
+                print(f"    ... and {len(existing) - 10} more")
+            print("  Remove them first or choose a different name.")
+            sys.exit(1)
+        print(f"  (directory exists but is empty -- scaffolding into it)")
 
     if not TEMPLATE_DIR.exists():
         print(f"\n  ERROR: Template directory not found: {TEMPLATE_DIR}")
@@ -281,7 +289,7 @@ def scaffold_project(inputs: dict, dry_run: bool = False) -> Path:
 
     # Copy template tree
     print(f"  Copying template to {target}...")
-    shutil.copytree(str(TEMPLATE_DIR), str(target))
+    shutil.copytree(str(TEMPLATE_DIR), str(target), dirs_exist_ok=True)
 
     # Fill placeholders in all text files
     filled_count = 0
