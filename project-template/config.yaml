@@ -1,0 +1,64 @@
+# {{PROJECT_NAME}} - Configuration
+# Local-first routing: 90%+ queries run locally for free
+
+project:
+  name: "{{PROJECT_NAME}}"
+  description: "{{PROJECT_DESCRIPTION}}"
+  created: "{{DATE}}"
+
+# Model routing configuration
+models:
+  local:
+    deepseek-r1:
+      url: "http://localhost:11434/api/generate"
+      model: "deepseek-r1:14b"
+      type: "reasoning"
+      cost_per_query: 0.0
+      max_tokens: 4096
+      use_for: ["simple_qa", "brainstorming", "summarization"]
+
+    qwen-2.5:
+      url: "http://localhost:11434/api/generate"
+      model: "qwen2.5:32b"
+      type: "code"
+      cost_per_query: 0.0
+      max_tokens: 8192
+      use_for: ["code_generation", "code_review", "analysis"]
+
+  cloud:
+    perplexity:
+      api_key_env: "PERPLEXITY_API_KEY"
+      model: "sonar-pro"
+      cost_per_query: 0.001
+      use_for: ["web_search", "current_events", "fact_checking"]
+
+    claude:
+      api_key_env: "ANTHROPIC_API_KEY"
+      model: "claude-sonnet-4-5-20250929"
+      cost_per_query: 0.15
+      use_for: ["complex_reasoning", "novel_problems", "creative_writing"]
+      last_resort: true
+
+# Routing thresholds
+routing:
+  complexity_threshold: 0.7  # Above this, consider cloud models
+  web_keywords: ["latest", "current", "today", "news", "search", "find online"]
+  code_keywords: ["code", "function", "class", "debug", "refactor", "implement"]
+
+# Budget limits
+budget:
+  daily_warning: {{DAILY_BUDGET}}
+  daily_limit: {{DAILY_BUDGET}}
+  monthly_warning: {{MONTHLY_BUDGET_WARNING}}
+  monthly_limit: {{MONTHLY_BUDGET}}
+  per_agent_limit: 5.00
+
+# Knowledge base
+knowledge_base:
+  path: "knowledge-base/"
+  active_projects: "knowledge-base/ACTIVE-PROJECTS.md"
+
+# Logging
+logging:
+  usage_log: "usage_log.json"
+  verbose: false

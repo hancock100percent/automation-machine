@@ -1,0 +1,15 @@
+{
+  "agent": "{AGENT_NAME}",
+  "created": "2026-02-07",
+  "iteration": 0,
+  "status": "idle",
+  "exit_signal": false,
+  "exit_reason": null,
+  "exit_message": null,
+  "session_cost_usd": 0.0,
+  "tasks": [],
+  "completed_tasks": [],
+  "current_task": null,
+  "notes": [],
+  "last_updated": null
+}

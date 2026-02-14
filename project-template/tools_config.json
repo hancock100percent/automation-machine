@@ -1,0 +1,65 @@
+{
+  "tools": {
+    "perplexity": {
+      "enabled": true,
+      "type": "web_search",
+      "api_key_env": "PERPLEXITY_API_KEY",
+      "endpoint": "https://api.perplexity.ai/chat/completions",
+      "model": "sonar-pro",
+      "description": "Web search and research via Perplexity AI",
+      "cost_per_query": 0.001
+    },
+    "comfyui": {
+      "enabled": true,
+      "type": "image_generation",
+      "endpoint": "http://100.64.130.71:8188",
+      "description": "Local image generation via ComfyUI on The Machine",
+      "cost_per_query": 0.0
+    },
+    "comfyui-video": {
+      "enabled": true,
+      "type": "video_generation",
+      "endpoint": "http://100.64.130.71:8188",
+      "description": "Local video generation via ComfyUI (Wan2.1 I2V)",
+      "cost_per_query": 0.0
+    },
+    "local-deepseek": {
+      "enabled": true,
+      "type": "llm",
+      "endpoint": "http://localhost:11434/api/generate",
+      "model": "deepseek-r1:14b",
+      "description": "Local DeepSeek R1 for simple queries",
+      "cost_per_query": 0.0
+    },
+    "local-qwen": {
+      "enabled": true,
+      "type": "llm",
+      "endpoint": "http://localhost:11434/api/generate",
+      "model": "qwen2.5:32b",
+      "description": "Local Qwen 2.5 for code and analysis",
+      "cost_per_query": 0.0
+    },
+    "claude": {
+      "enabled": true,
+      "type": "llm",
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "model": "claude-sonnet-4-5-20250929",
+      "description": "Claude Sonnet for complex tasks (last resort)",
+      "cost_per_query": 0.15
+    },
+    "github": {
+      "enabled": true,
+      "type": "code_search",
+      "description": "GitHub via gh CLI (authenticated)",
+      "cost_per_query": 0.0
+    }
+  },
+  "routing": {
+    "default_tool": "local-deepseek",
+    "code_tool": "local-qwen",
+    "web_tool": "perplexity",
+    "complex_tool": "claude",
+    "image_tool": "comfyui",
+    "video_tool": "comfyui-video"
+  }
+}
